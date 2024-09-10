@@ -1,0 +1,4593 @@
+nohup: ignoring input
+Training using config: 
+run_name: finetune-mosaic-bert
+tokenizer_name: dnavocab.json
+model_name: bert-base-uncased
+pretrained_checkpoint: mosaic-bert-base-uncasedepoch20/ckpt/latest-rank0.pt
+max_seq_len: 256
+load_path: mosaic-bert-base-uncasedepoch20/ckpt/latest-rank0.pt
+save_folder: finetune/lnc_full
+model:
+  name: mosaic_bert
+  num_labels: 2
+  pretrained_model_name: ${model_name}
+  tokenizer_name: ${tokenizer_name}
+train_loader:
+  split: train
+  tokenizer_name: ${tokenizer_name}
+  max_seq_len: ${max_seq_len}
+  shuffle: true
+  drop_last: true
+  num_workers: 8
+eval_loader:
+  split: validation
+  tokenizer_name: ${tokenizer_name}
+  max_seq_len: ${max_seq_len}
+  shuffle: true
+  drop_last: true
+  num_workers: 8
+scheduler:
+  name: linear_decay_with_warmup
+  t_warmup: 0.06dur
+  alpha_f: 0.02
+optimizer:
+  name: decoupled_adamw
+  lr: 1.0e-05
+  betas:
+  - 0.9
+  - 0.98
+  eps: 1.0e-06
+  weight_decay: 1.0e-06
+max_duration: 5ep
+eval_interval: 200ba
+global_train_batch_size: 16
+seed: 17
+device_eval_batch_size: 16
+device_train_microbatch_size: 16
+precision: amp_bf16
+progress_bar: false
+log_to_console: true
+console_log_interval: 10ba
+loggers:
+  wandb:
+    project: mosaicbertfinetune_lncfull
+callbacks:
+  speed_monitor:
+    window_size: 50
+  lr_monitor: {}
+'2': null
+
+WARNING: device_train_microbatch_size > device_train_batch_size, will be reduced from 16 -> 4.
+Initializing model...
+n_params=1.1707e+08
+Building train loader...
+{0, 1}
+6102
+Building eval loader...
+{0, 1}
+322
+HuggingFaceModel(
+  (model): BertForSequenceClassification(
+    (bert): BertModel(
+      (embeddings): BertEmbeddings(
+        (word_embeddings): Embedding(4098, 768, padding_idx=0)
+        (token_type_embeddings): Embedding(2, 768)
+        (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)
+        (dropout): Dropout(p=0.1, inplace=False)
+      )
+      (encoder): BertEncoder(
+        (layer): ModuleList(
+          (0-11): 12 x BertLayer(
+            (attention): BertUnpadAttention(
+              (self): BertUnpadSelfAttention(
+                (dropout): Dropout(p=0.0, inplace=False)
+                (Wqkv): Linear(in_features=768, out_features=2304, bias=True)
+              )
+              (output): BertSelfOutput(
+                (dense): Linear(in_features=768, out_features=768, bias=True)
+                (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)
+                (dropout): Dropout(p=0.1, inplace=False)
+              )
+            )
+            (mlp): BertGatedLinearUnitMLP(
+              (gated_layers): Linear(in_features=768, out_features=6144, bias=False)
+              (act): GELU(approximate='none')
+              (wo): Linear(in_features=3072, out_features=768, bias=True)
+              (dropout): Dropout(p=0.1, inplace=False)
+              (layernorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)
+            )
+          )
+        )
+      )
+      (pooler): BertPooler(
+        (dense): Linear(in_features=768, out_features=768, bias=True)
+        (activation): Tanh()
+      )
+    )
+    (dropout): Dropout(p=0.1, inplace=False)
+    (classifier): Linear(in_features=768, out_features=2, bias=True)
+  )
+)
+wandb: Currently logged in as: naimavahaboo (naimavahaboo-RMIT University). Use `wandb login --relogin` to force relogin
+wandb: wandb version 0.17.5 is available!  To upgrade, please run:
+wandb:  $ pip install wandb --upgrade
+wandb: Tracking run with wandb version 0.16.6
+wandb: Run data is saved locally in /mosaicml-examples/examples/benchmarks/bert/wandb/run-20240730_004308-yiifc2nm
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run finetune-mosaic-bert
+wandb: ⭐️ View project at https://wandb.ai/naimavahaboo-RMIT%20University/mosaicbertfinetune_lncfull
+wandb: 🚀 View run at https://wandb.ai/naimavahaboo-RMIT%20University/mosaicbertfinetune_lncfull/runs/yiifc2nm
+/usr/local/lib/python3.10/dist-packages/composer/callbacks/speed_monitor.py:256: UserWarning: gpu_flop count not found for nvidia a10g with precision=amp_bf16 so MFU cannot be calculated and reported. gpu_flops_available can be manually overridden by setting gpu_flops_available in SpeedMonitor or nvidia a10g can be added to GPU_AVAILABLE_FLOPS in composer/callbacks/speed_monitor.py
+  self.gpu_flops_available = get_gpu_flops_available(state)
+/usr/local/lib/python3.10/dist-packages/composer/core/state.py:1036: UserWarning: Automatically adding required_on_load algorithm LowPrecisionLayerNorm(apply_at=Event.INIT) to trainer, which was enabled when training the loaded checkpoint. If you wish to use pretrained weights and ignore required_on_load algorithms, which may result in some weights failing to load, include LowPrecisionLayerNorm in `load_exclude_algorithms`, e.g. `load_exclude_algorithms=['LowPrecisionLayerNorm']`.
+  warnings.warn(
+Found these missing keys in the checkpoint: model.bert.pooler.dense.weight, model.bert.pooler.dense.bias, model.classifier.weight, model.classifier.bias
+Found these unexpected keys in the checkpoint: model.cls.predictions.decoder.bias, model.cls.predictions.decoder.weight, model.cls.predictions.transform.LayerNorm.bias, model.cls.predictions.transform.LayerNorm.weight, model.cls.predictions.transform.dense.bias, model.cls.predictions.transform.dense.weight
+Logging config...
+run_name: finetune-mosaic-bert
+tokenizer_name: dnavocab.json
+model_name: bert-base-uncased
+pretrained_checkpoint: mosaic-bert-base-uncasedepoch20/ckpt/latest-rank0.pt
+max_seq_len: 256
+load_path: mosaic-bert-base-uncasedepoch20/ckpt/latest-rank0.pt
+save_folder: finetune/lnc_full
+model:
+  name: mosaic_bert
+  num_labels: 2
+  pretrained_model_name: ${model_name}
+  tokenizer_name: ${tokenizer_name}
+train_loader:
+  split: train
+  tokenizer_name: ${tokenizer_name}
+  max_seq_len: ${max_seq_len}
+  shuffle: true
+  drop_last: true
+  num_workers: 8
+eval_loader:
+  split: validation
+  tokenizer_name: ${tokenizer_name}
+  max_seq_len: ${max_seq_len}
+  shuffle: true
+  drop_last: true
+  num_workers: 8
+scheduler:
+  name: linear_decay_with_warmup
+  t_warmup: 0.06dur
+  alpha_f: 0.02
+optimizer:
+  name: decoupled_adamw
+  lr: 1.0e-05
+  betas:
+  - 0.9
+  - 0.98
+  eps: 1.0e-06
+  weight_decay: 1.0e-06
+max_duration: 5ep
+eval_interval: 200ba
+global_train_batch_size: 16
+seed: 17
+device_eval_batch_size: 16
+device_train_microbatch_size: 4
+precision: amp_bf16
+progress_bar: false
+log_to_console: true
+console_log_interval: 10ba
+loggers:
+  wandb:
+    project: mosaicbertfinetune_lncfull
+callbacks:
+  speed_monitor:
+    window_size: 50
+  lr_monitor: {}
+'2': null
+n_gpus: 4
+device_train_batch_size: 4
+
+Starting training...
+******************************
+Config:
+composer_commit_hash: None
+composer_version: 0.19.0
+enabled_algorithms/LowPrecisionLayerNorm: true
+node_name: unknown because NODENAME environment variable not set
+num_gpus_per_node: 4
+num_nodes: 1
+rank_zero_seed: 17
+
+******************************
+[epoch=1][batch=1/382]:
+	 Train time/epoch: 0
+	 Train time/batch: 0
+	 Train time/sample: 0
+	 Train time/batch_in_epoch: 0
+	 Train time/sample_in_epoch: 0
+	 Train time/token: 0
+	 Train time/token_in_epoch: 0
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.6406
+	 Train metrics/train/MulticlassAccuracy: 0.7500
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.5946
+	 Train metrics/train/BinaryF1Score: 0.7778
+	 Train time/train: 0.0003
+	 Train time/val: 0.0000
+	 Train time/total: 0.0003
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=1][batch=10/382]:
+	 Train time/batch: 9
+	 Train time/sample: 144
+	 Train time/batch_in_epoch: 9
+	 Train time/sample_in_epoch: 144
+	 Train time/token: 36864
+	 Train time/token_in_epoch: 36864
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.6858
+	 Train metrics/train/MulticlassAccuracy: 0.6875
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.3133
+	 Train metrics/train/BinaryF1Score: 0.5455
+	 Train time/train: 0.0008
+	 Train time/val: 0.0000
+	 Train time/total: 0.0008
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=1][batch=20/382]:
+	 Train time/batch: 19
+	 Train time/sample: 304
+	 Train time/batch_in_epoch: 19
+	 Train time/sample_in_epoch: 304
+	 Train time/token: 77824
+	 Train time/token_in_epoch: 77824
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.6992
+	 Train metrics/train/MulticlassAccuracy: 0.5000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: -0.2928
+	 Train metrics/train/BinaryF1Score: 0.0000
+	 Train time/train: 0.0014
+	 Train time/val: 0.0000
+	 Train time/total: 0.0014
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=1][batch=30/382]:
+	 Train time/batch: 29
+	 Train time/sample: 464
+	 Train time/batch_in_epoch: 29
+	 Train time/sample_in_epoch: 464
+	 Train time/token: 118784
+	 Train time/token_in_epoch: 118784
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.6577
+	 Train metrics/train/MulticlassAccuracy: 0.5625
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.0630
+	 Train metrics/train/BinaryF1Score: 0.0000
+	 Train time/train: 0.0020
+	 Train time/val: 0.0000
+	 Train time/total: 0.0020
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=1][batch=40/382]:
+	 Train time/batch: 39
+	 Train time/sample: 624
+	 Train time/batch_in_epoch: 39
+	 Train time/sample_in_epoch: 624
+	 Train time/token: 159744
+	 Train time/token_in_epoch: 159744
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.6091
+	 Train metrics/train/MulticlassAccuracy: 0.6250
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.2928
+	 Train metrics/train/BinaryF1Score: 0.2500
+	 Train time/train: 0.0025
+	 Train time/val: 0.0000
+	 Train time/total: 0.0025
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=1][batch=50/382]:
+	 Train time/batch: 49
+	 Train time/sample: 784
+	 Train time/batch_in_epoch: 49
+	 Train time/sample_in_epoch: 784
+	 Train time/token: 200704
+	 Train time/token_in_epoch: 200704
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.5974
+	 Train metrics/train/MulticlassAccuracy: 0.5625
+	 Train metrics/train/MulticlassMatthewsCorrCoef: -0.2000
+	 Train metrics/train/BinaryF1Score: 0.0000
+	 Train time/train: 0.0031
+	 Train time/val: 0.0000
+	 Train time/total: 0.0031
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=1][batch=60/382]:
+	 Train time/batch: 59
+	 Train time/sample: 944
+	 Train time/batch_in_epoch: 59
+	 Train time/sample_in_epoch: 944
+	 Train time/token: 241664
+	 Train time/token_in_epoch: 241664
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.6057
+	 Train metrics/train/MulticlassAccuracy: 0.5625
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.3892
+	 Train metrics/train/BinaryF1Score: 0.5882
+	 Train throughput/batches_per_sec: 5.0369
+	 Train throughput/samples_per_sec: 80.5901
+	 Train throughput/device/batches_per_sec: 1.2592
+	 Train throughput/device/samples_per_sec: 20.1475
+	 Train throughput/tokens_per_sec: 20631.0544
+	 Train throughput/device/tokens_per_sec: 5157.7636
+	 Train time/train: 0.0036
+	 Train time/val: 0.0000
+	 Train time/total: 0.0036
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=1][batch=70/382]:
+	 Train time/batch: 69
+	 Train time/sample: 1104
+	 Train time/batch_in_epoch: 69
+	 Train time/sample_in_epoch: 1104
+	 Train time/token: 282624
+	 Train time/token_in_epoch: 282624
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.4732
+	 Train metrics/train/MulticlassAccuracy: 0.6875
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.0925
+	 Train metrics/train/BinaryF1Score: 0.2857
+	 Train throughput/batches_per_sec: 5.0571
+	 Train throughput/samples_per_sec: 80.9136
+	 Train throughput/device/batches_per_sec: 1.2643
+	 Train throughput/device/samples_per_sec: 20.2284
+	 Train throughput/tokens_per_sec: 20713.8888
+	 Train throughput/device/tokens_per_sec: 5178.4722
+	 Train time/train: 0.0041
+	 Train time/val: 0.0000
+	 Train time/total: 0.0041
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=1][batch=80/382]:
+	 Train time/batch: 79
+	 Train time/sample: 1264
+	 Train time/batch_in_epoch: 79
+	 Train time/sample_in_epoch: 1264
+	 Train time/token: 323584
+	 Train time/token_in_epoch: 323584
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.5517
+	 Train metrics/train/MulticlassAccuracy: 0.7500
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.5164
+	 Train metrics/train/BinaryF1Score: 0.7143
+	 Train throughput/batches_per_sec: 5.0566
+	 Train throughput/samples_per_sec: 80.9049
+	 Train throughput/device/batches_per_sec: 1.2641
+	 Train throughput/device/samples_per_sec: 20.2262
+	 Train throughput/tokens_per_sec: 20711.6662
+	 Train throughput/device/tokens_per_sec: 5177.9165
+	 Train time/train: 0.0047
+	 Train time/val: 0.0000
+	 Train time/total: 0.0047
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=1][batch=90/382]:
+	 Train time/batch: 89
+	 Train time/sample: 1424
+	 Train time/batch_in_epoch: 89
+	 Train time/sample_in_epoch: 1424
+	 Train time/token: 364544
+	 Train time/token_in_epoch: 364544
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.4608
+	 Train metrics/train/MulticlassAccuracy: 0.8125
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.6742
+	 Train metrics/train/BinaryF1Score: 0.7692
+	 Train throughput/batches_per_sec: 5.0589
+	 Train throughput/samples_per_sec: 80.9416
+	 Train throughput/device/batches_per_sec: 1.2647
+	 Train throughput/device/samples_per_sec: 20.2354
+	 Train throughput/tokens_per_sec: 20721.0542
+	 Train throughput/device/tokens_per_sec: 5180.2636
+	 Train time/train: 0.0052
+	 Train time/val: 0.0000
+	 Train time/total: 0.0052
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=1][batch=100/382]:
+	 Train time/batch: 99
+	 Train time/sample: 1584
+	 Train time/batch_in_epoch: 99
+	 Train time/sample_in_epoch: 1584
+	 Train time/token: 405504
+	 Train time/token_in_epoch: 405504
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.4970
+	 Train metrics/train/MulticlassAccuracy: 0.6875
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.3578
+	 Train metrics/train/BinaryF1Score: 0.6154
+	 Train throughput/batches_per_sec: 5.0657
+	 Train throughput/samples_per_sec: 81.0509
+	 Train throughput/device/batches_per_sec: 1.2664
+	 Train throughput/device/samples_per_sec: 20.2627
+	 Train throughput/tokens_per_sec: 20749.0404
+	 Train throughput/device/tokens_per_sec: 5187.2601
+	 Train time/train: 0.0058
+	 Train time/val: 0.0000
+	 Train time/total: 0.0058
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=1][batch=110/382]:
+	 Train time/batch: 109
+	 Train time/sample: 1744
+	 Train time/batch_in_epoch: 109
+	 Train time/sample_in_epoch: 1744
+	 Train time/token: 446464
+	 Train time/token_in_epoch: 446464
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.5739
+	 Train metrics/train/MulticlassAccuracy: 0.6875
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.4229
+	 Train metrics/train/BinaryF1Score: 0.6667
+	 Train throughput/batches_per_sec: 5.0595
+	 Train throughput/samples_per_sec: 80.9524
+	 Train throughput/device/batches_per_sec: 1.2649
+	 Train throughput/device/samples_per_sec: 20.2381
+	 Train throughput/tokens_per_sec: 20723.8241
+	 Train throughput/device/tokens_per_sec: 5180.9560
+	 Train time/train: 0.0063
+	 Train time/val: 0.0000
+	 Train time/total: 0.0063
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=1][batch=120/382]:
+	 Train time/batch: 119
+	 Train time/sample: 1904
+	 Train time/batch_in_epoch: 119
+	 Train time/sample_in_epoch: 1904
+	 Train time/token: 487424
+	 Train time/token_in_epoch: 487424
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.3677
+	 Train metrics/train/MulticlassAccuracy: 0.8750
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.7454
+	 Train metrics/train/BinaryF1Score: 0.9091
+	 Train throughput/batches_per_sec: 5.0534
+	 Train throughput/samples_per_sec: 80.8552
+	 Train throughput/device/batches_per_sec: 1.2634
+	 Train throughput/device/samples_per_sec: 20.2138
+	 Train throughput/tokens_per_sec: 20698.9201
+	 Train throughput/device/tokens_per_sec: 5174.7300
+	 Train time/train: 0.0069
+	 Train time/val: 0.0000
+	 Train time/total: 0.0069
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=1][batch=130/382]:
+	 Train time/batch: 129
+	 Train time/sample: 2064
+	 Train time/batch_in_epoch: 129
+	 Train time/sample_in_epoch: 2064
+	 Train time/token: 528384
+	 Train time/token_in_epoch: 528384
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.2506
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8321
+	 Train metrics/train/BinaryF1Score: 0.8571
+	 Train throughput/batches_per_sec: 5.0567
+	 Train throughput/samples_per_sec: 80.9072
+	 Train throughput/device/batches_per_sec: 1.2642
+	 Train throughput/device/samples_per_sec: 20.2268
+	 Train throughput/tokens_per_sec: 20712.2359
+	 Train throughput/device/tokens_per_sec: 5178.0590
+	 Train time/train: 0.0074
+	 Train time/val: 0.0000
+	 Train time/total: 0.0074
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=1][batch=140/382]:
+	 Train time/batch: 139
+	 Train time/sample: 2224
+	 Train time/batch_in_epoch: 139
+	 Train time/sample_in_epoch: 2224
+	 Train time/token: 569344
+	 Train time/token_in_epoch: 569344
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.2577
+	 Train metrics/train/MulticlassAccuracy: 0.8750
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.7333
+	 Train metrics/train/BinaryF1Score: 0.8333
+	 Train throughput/batches_per_sec: 5.0571
+	 Train throughput/samples_per_sec: 80.9136
+	 Train throughput/device/batches_per_sec: 1.2643
+	 Train throughput/device/samples_per_sec: 20.2284
+	 Train throughput/tokens_per_sec: 20713.8741
+	 Train throughput/device/tokens_per_sec: 5178.4685
+	 Train time/train: 0.0080
+	 Train time/val: 0.0000
+	 Train time/total: 0.0080
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=1][batch=150/382]:
+	 Train time/batch: 149
+	 Train time/sample: 2384
+	 Train time/batch_in_epoch: 149
+	 Train time/sample_in_epoch: 2384
+	 Train time/token: 610304
+	 Train time/token_in_epoch: 610304
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.2654
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8783
+	 Train metrics/train/BinaryF1Score: 0.9474
+	 Train throughput/batches_per_sec: 5.0515
+	 Train throughput/samples_per_sec: 80.8245
+	 Train throughput/device/batches_per_sec: 1.2629
+	 Train throughput/device/samples_per_sec: 20.2061
+	 Train throughput/tokens_per_sec: 20691.0738
+	 Train throughput/device/tokens_per_sec: 5172.7684
+	 Train time/train: 0.0085
+	 Train time/val: 0.0000
+	 Train time/total: 0.0085
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=1][batch=160/382]:
+	 Train time/batch: 159
+	 Train time/sample: 2544
+	 Train time/batch_in_epoch: 159
+	 Train time/sample_in_epoch: 2544
+	 Train time/token: 651264
+	 Train time/token_in_epoch: 651264
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.4441
+	 Train metrics/train/MulticlassAccuracy: 0.8750
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.7460
+	 Train metrics/train/BinaryF1Score: 0.8571
+	 Train throughput/batches_per_sec: 5.0576
+	 Train throughput/samples_per_sec: 80.9223
+	 Train throughput/device/batches_per_sec: 1.2644
+	 Train throughput/device/samples_per_sec: 20.2306
+	 Train throughput/tokens_per_sec: 20716.1014
+	 Train throughput/device/tokens_per_sec: 5179.0254
+	 Train time/train: 0.0091
+	 Train time/val: 0.0000
+	 Train time/total: 0.0091
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=1][batch=170/382]:
+	 Train time/batch: 169
+	 Train time/sample: 2704
+	 Train time/batch_in_epoch: 169
+	 Train time/sample_in_epoch: 2704
+	 Train time/token: 692224
+	 Train time/token_in_epoch: 692224
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.1578
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0627
+	 Train throughput/samples_per_sec: 81.0028
+	 Train throughput/device/batches_per_sec: 1.2657
+	 Train throughput/device/samples_per_sec: 20.2507
+	 Train throughput/tokens_per_sec: 20736.7059
+	 Train throughput/device/tokens_per_sec: 5184.1765
+	 Train time/train: 0.0096
+	 Train time/val: 0.0000
+	 Train time/total: 0.0096
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=1][batch=180/382]:
+	 Train time/batch: 179
+	 Train time/sample: 2864
+	 Train time/batch_in_epoch: 179
+	 Train time/sample_in_epoch: 2864
+	 Train time/token: 733184
+	 Train time/token_in_epoch: 733184
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.2152
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8819
+	 Train metrics/train/BinaryF1Score: 0.9333
+	 Train throughput/batches_per_sec: 5.0627
+	 Train throughput/samples_per_sec: 81.0027
+	 Train throughput/device/batches_per_sec: 1.2657
+	 Train throughput/device/samples_per_sec: 20.2507
+	 Train throughput/tokens_per_sec: 20736.6891
+	 Train throughput/device/tokens_per_sec: 5184.1723
+	 Train time/train: 0.0102
+	 Train time/val: 0.0000
+	 Train time/total: 0.0102
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=1][batch=190/382]:
+	 Train time/batch: 189
+	 Train time/sample: 3024
+	 Train time/batch_in_epoch: 189
+	 Train time/sample_in_epoch: 3024
+	 Train time/token: 774144
+	 Train time/token_in_epoch: 774144
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.4028
+	 Train metrics/train/MulticlassAccuracy: 0.8125
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.6831
+	 Train metrics/train/BinaryF1Score: 0.8235
+	 Train throughput/batches_per_sec: 5.0629
+	 Train throughput/samples_per_sec: 81.0062
+	 Train throughput/device/batches_per_sec: 1.2657
+	 Train throughput/device/samples_per_sec: 20.2516
+	 Train throughput/tokens_per_sec: 20737.5878
+	 Train throughput/device/tokens_per_sec: 5184.3969
+	 Train time/train: 0.0107
+	 Train time/val: 0.0000
+	 Train time/total: 0.0107
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=1][batch=200/382]:
+	 Train time/batch: 199
+	 Train time/sample: 3184
+	 Train time/batch_in_epoch: 199
+	 Train time/sample_in_epoch: 3184
+	 Train time/token: 815104
+	 Train time/token_in_epoch: 815104
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.2110
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8704
+	 Train metrics/train/BinaryF1Score: 0.9091
+	 Train throughput/batches_per_sec: 5.0640
+	 Train throughput/samples_per_sec: 81.0240
+	 Train throughput/device/batches_per_sec: 1.2660
+	 Train throughput/device/samples_per_sec: 20.2560
+	 Train throughput/tokens_per_sec: 20742.1329
+	 Train throughput/device/tokens_per_sec: 5185.5332
+	 Train time/train: 0.0113
+	 Train time/val: 0.0000
+	 Train time/total: 0.0113
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[Eval batch=1/20] Eval on eval data
+[Eval batch=3/20] Eval on eval data
+[Eval batch=5/20] Eval on eval data
+[Eval batch=7/20] Eval on eval data
+[Eval batch=9/20] Eval on eval data
+[Eval batch=10/20] Eval on eval data
+[Eval batch=12/20] Eval on eval data
+[Eval batch=14/20] Eval on eval data
+[Eval batch=16/20] Eval on eval data
+[Eval batch=18/20] Eval on eval data
+[Eval batch=20/20] Eval on eval data:
+	 Eval metrics/eval/MulticlassAccuracy: 0.8844
+	 Eval metrics/eval/MulticlassMatthewsCorrCoef: 0.7689
+	 Eval metrics/eval/BinaryF1Score: 0.8674
+[epoch=1][batch=210/382]:
+	 Train time/batch: 209
+	 Train time/sample: 3344
+	 Train time/batch_in_epoch: 209
+	 Train time/sample_in_epoch: 3344
+	 Train time/token: 856064
+	 Train time/token_in_epoch: 856064
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.2472
+	 Train metrics/train/MulticlassAccuracy: 0.8125
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.4623
+	 Train metrics/train/BinaryF1Score: 0.5714
+	 Train throughput/batches_per_sec: 5.0591
+	 Train throughput/samples_per_sec: 80.9457
+	 Train throughput/device/batches_per_sec: 1.2648
+	 Train throughput/device/samples_per_sec: 20.2364
+	 Train throughput/tokens_per_sec: 20722.0983
+	 Train throughput/device/tokens_per_sec: 5180.5246
+	 Train time/train: 0.0118
+	 Train time/val: 0.0001
+	 Train time/total: 0.0119
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=1][batch=220/382]:
+	 Train time/batch: 219
+	 Train time/sample: 3504
+	 Train time/batch_in_epoch: 219
+	 Train time/sample_in_epoch: 3504
+	 Train time/token: 897024
+	 Train time/token_in_epoch: 897024
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.4172
+	 Train metrics/train/MulticlassAccuracy: 0.7500
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.4667
+	 Train metrics/train/BinaryF1Score: 0.8000
+	 Train throughput/batches_per_sec: 5.0598
+	 Train throughput/samples_per_sec: 80.9569
+	 Train throughput/device/batches_per_sec: 1.2650
+	 Train throughput/device/samples_per_sec: 20.2392
+	 Train throughput/tokens_per_sec: 20724.9586
+	 Train throughput/device/tokens_per_sec: 5181.2397
+	 Train time/train: 0.0124
+	 Train time/val: 0.0001
+	 Train time/total: 0.0125
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=1][batch=230/382]:
+	 Train time/batch: 229
+	 Train time/sample: 3664
+	 Train time/batch_in_epoch: 229
+	 Train time/sample_in_epoch: 3664
+	 Train time/token: 937984
+	 Train time/token_in_epoch: 937984
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 1.1212
+	 Train metrics/train/MulticlassAccuracy: 0.5625
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.0976
+	 Train metrics/train/BinaryF1Score: 0.4615
+	 Train throughput/batches_per_sec: 5.0543
+	 Train throughput/samples_per_sec: 80.8687
+	 Train throughput/device/batches_per_sec: 1.2636
+	 Train throughput/device/samples_per_sec: 20.2172
+	 Train throughput/tokens_per_sec: 20702.3746
+	 Train throughput/device/tokens_per_sec: 5175.5936
+	 Train time/train: 0.0129
+	 Train time/val: 0.0001
+	 Train time/total: 0.0130
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=1][batch=240/382]:
+	 Train time/batch: 239
+	 Train time/sample: 3824
+	 Train time/batch_in_epoch: 239
+	 Train time/sample_in_epoch: 3824
+	 Train time/token: 978944
+	 Train time/token_in_epoch: 978944
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.3299
+	 Train metrics/train/MulticlassAccuracy: 0.8125
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.6742
+	 Train metrics/train/BinaryF1Score: 0.7692
+	 Train throughput/batches_per_sec: 5.0533
+	 Train throughput/samples_per_sec: 80.8524
+	 Train throughput/device/batches_per_sec: 1.2633
+	 Train throughput/device/samples_per_sec: 20.2131
+	 Train throughput/tokens_per_sec: 20698.2151
+	 Train throughput/device/tokens_per_sec: 5174.5538
+	 Train time/train: 0.0135
+	 Train time/val: 0.0001
+	 Train time/total: 0.0136
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=1][batch=250/382]:
+	 Train time/batch: 249
+	 Train time/sample: 3984
+	 Train time/batch_in_epoch: 249
+	 Train time/sample_in_epoch: 3984
+	 Train time/token: 1019904
+	 Train time/token_in_epoch: 1019904
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.7156
+	 Train metrics/train/MulticlassAccuracy: 0.6250
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.4237
+	 Train metrics/train/BinaryF1Score: 0.5000
+	 Train throughput/batches_per_sec: 5.0528
+	 Train throughput/samples_per_sec: 80.8450
+	 Train throughput/device/batches_per_sec: 1.2632
+	 Train throughput/device/samples_per_sec: 20.2113
+	 Train throughput/tokens_per_sec: 20696.3263
+	 Train throughput/device/tokens_per_sec: 5174.0816
+	 Train time/train: 0.0140
+	 Train time/val: 0.0001
+	 Train time/total: 0.0141
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=1][batch=260/382]:
+	 Train time/batch: 259
+	 Train time/sample: 4144
+	 Train time/batch_in_epoch: 259
+	 Train time/sample_in_epoch: 4144
+	 Train time/token: 1060864
+	 Train time/token_in_epoch: 1060864
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.2338
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8783
+	 Train metrics/train/BinaryF1Score: 0.9474
+	 Train throughput/batches_per_sec: 5.0577
+	 Train throughput/samples_per_sec: 80.9238
+	 Train throughput/device/batches_per_sec: 1.2644
+	 Train throughput/device/samples_per_sec: 20.2309
+	 Train throughput/tokens_per_sec: 20716.4807
+	 Train throughput/device/tokens_per_sec: 5179.1202
+	 Train time/train: 0.0146
+	 Train time/val: 0.0001
+	 Train time/total: 0.0147
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=1][batch=270/382]:
+	 Train time/batch: 269
+	 Train time/sample: 4304
+	 Train time/batch_in_epoch: 269
+	 Train time/sample_in_epoch: 4304
+	 Train time/token: 1101824
+	 Train time/token_in_epoch: 1101824
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.6902
+	 Train metrics/train/MulticlassAccuracy: 0.6875
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.4804
+	 Train metrics/train/BinaryF1Score: 0.5455
+	 Train throughput/batches_per_sec: 5.0572
+	 Train throughput/samples_per_sec: 80.9150
+	 Train throughput/device/batches_per_sec: 1.2643
+	 Train throughput/device/samples_per_sec: 20.2288
+	 Train throughput/tokens_per_sec: 20714.2429
+	 Train throughput/device/tokens_per_sec: 5178.5607
+	 Train time/train: 0.0151
+	 Train time/val: 0.0001
+	 Train time/total: 0.0152
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=1][batch=280/382]:
+	 Train time/batch: 279
+	 Train time/sample: 4464
+	 Train time/batch_in_epoch: 279
+	 Train time/sample_in_epoch: 4464
+	 Train time/token: 1142784
+	 Train time/token_in_epoch: 1142784
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.2522
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8819
+	 Train metrics/train/BinaryF1Score: 0.9333
+	 Train throughput/batches_per_sec: 5.0555
+	 Train throughput/samples_per_sec: 80.8879
+	 Train throughput/device/batches_per_sec: 1.2639
+	 Train throughput/device/samples_per_sec: 20.2220
+	 Train throughput/tokens_per_sec: 20707.2957
+	 Train throughput/device/tokens_per_sec: 5176.8239
+	 Train time/train: 0.0157
+	 Train time/val: 0.0001
+	 Train time/total: 0.0158
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=1][batch=290/382]:
+	 Train time/batch: 289
+	 Train time/sample: 4624
+	 Train time/batch_in_epoch: 289
+	 Train time/sample_in_epoch: 4624
+	 Train time/token: 1183744
+	 Train time/token_in_epoch: 1183744
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.5047
+	 Train metrics/train/MulticlassAccuracy: 0.6875
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.5222
+	 Train metrics/train/BinaryF1Score: 0.6667
+	 Train throughput/batches_per_sec: 5.0534
+	 Train throughput/samples_per_sec: 80.8548
+	 Train throughput/device/batches_per_sec: 1.2634
+	 Train throughput/device/samples_per_sec: 20.2137
+	 Train throughput/tokens_per_sec: 20698.8322
+	 Train throughput/device/tokens_per_sec: 5174.7080
+	 Train time/train: 0.0162
+	 Train time/val: 0.0001
+	 Train time/total: 0.0163
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=1][batch=300/382]:
+	 Train time/batch: 299
+	 Train time/sample: 4784
+	 Train time/batch_in_epoch: 299
+	 Train time/sample_in_epoch: 4784
+	 Train time/token: 1224704
+	 Train time/token_in_epoch: 1224704
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.4729
+	 Train metrics/train/MulticlassAccuracy: 0.8125
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.5919
+	 Train metrics/train/BinaryF1Score: 0.8571
+	 Train throughput/batches_per_sec: 5.0578
+	 Train throughput/samples_per_sec: 80.9243
+	 Train throughput/device/batches_per_sec: 1.2644
+	 Train throughput/device/samples_per_sec: 20.2311
+	 Train throughput/tokens_per_sec: 20716.6253
+	 Train throughput/device/tokens_per_sec: 5179.1563
+	 Train time/train: 0.0168
+	 Train time/val: 0.0001
+	 Train time/total: 0.0169
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=1][batch=310/382]:
+	 Train time/batch: 309
+	 Train time/sample: 4944
+	 Train time/batch_in_epoch: 309
+	 Train time/sample_in_epoch: 4944
+	 Train time/token: 1265664
+	 Train time/token_in_epoch: 1265664
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.2620
+	 Train metrics/train/MulticlassAccuracy: 0.8750
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.7091
+	 Train metrics/train/BinaryF1Score: 0.8000
+	 Train throughput/batches_per_sec: 5.0540
+	 Train throughput/samples_per_sec: 80.8644
+	 Train throughput/device/batches_per_sec: 1.2635
+	 Train throughput/device/samples_per_sec: 20.2161
+	 Train throughput/tokens_per_sec: 20701.2927
+	 Train throughput/device/tokens_per_sec: 5175.3232
+	 Train time/train: 0.0173
+	 Train time/val: 0.0001
+	 Train time/total: 0.0174
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=1][batch=320/382]:
+	 Train time/batch: 319
+	 Train time/sample: 5104
+	 Train time/batch_in_epoch: 319
+	 Train time/sample_in_epoch: 5104
+	 Train time/token: 1306624
+	 Train time/token_in_epoch: 1306624
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.1872
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8704
+	 Train metrics/train/BinaryF1Score: 0.9091
+	 Train throughput/batches_per_sec: 5.0540
+	 Train throughput/samples_per_sec: 80.8644
+	 Train throughput/device/batches_per_sec: 1.2635
+	 Train throughput/device/samples_per_sec: 20.2161
+	 Train throughput/tokens_per_sec: 20701.2990
+	 Train throughput/device/tokens_per_sec: 5175.3247
+	 Train time/train: 0.0179
+	 Train time/val: 0.0001
+	 Train time/total: 0.0180
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=1][batch=330/382]:
+	 Train time/batch: 329
+	 Train time/sample: 5264
+	 Train time/batch_in_epoch: 329
+	 Train time/sample_in_epoch: 5264
+	 Train time/token: 1347584
+	 Train time/token_in_epoch: 1347584
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.3306
+	 Train metrics/train/MulticlassAccuracy: 0.8750
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.7454
+	 Train metrics/train/BinaryF1Score: 0.8000
+	 Train throughput/batches_per_sec: 5.0624
+	 Train throughput/samples_per_sec: 80.9985
+	 Train throughput/device/batches_per_sec: 1.2656
+	 Train throughput/device/samples_per_sec: 20.2496
+	 Train throughput/tokens_per_sec: 20735.6141
+	 Train throughput/device/tokens_per_sec: 5183.9035
+	 Train time/train: 0.0184
+	 Train time/val: 0.0001
+	 Train time/total: 0.0185
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=1][batch=340/382]:
+	 Train time/batch: 339
+	 Train time/sample: 5424
+	 Train time/batch_in_epoch: 339
+	 Train time/sample_in_epoch: 5424
+	 Train time/token: 1388544
+	 Train time/token_in_epoch: 1388544
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.2673
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8783
+	 Train metrics/train/BinaryF1Score: 0.9474
+	 Train throughput/batches_per_sec: 5.0644
+	 Train throughput/samples_per_sec: 81.0312
+	 Train throughput/device/batches_per_sec: 1.2661
+	 Train throughput/device/samples_per_sec: 20.2578
+	 Train throughput/tokens_per_sec: 20743.9754
+	 Train throughput/device/tokens_per_sec: 5185.9938
+	 Train time/train: 0.0190
+	 Train time/val: 0.0001
+	 Train time/total: 0.0191
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=1][batch=350/382]:
+	 Train time/batch: 349
+	 Train time/sample: 5584
+	 Train time/batch_in_epoch: 349
+	 Train time/sample_in_epoch: 5584
+	 Train time/token: 1429504
+	 Train time/token_in_epoch: 1429504
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.1737
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8563
+	 Train metrics/train/BinaryF1Score: 0.8889
+	 Train throughput/batches_per_sec: 5.0629
+	 Train throughput/samples_per_sec: 81.0057
+	 Train throughput/device/batches_per_sec: 1.2657
+	 Train throughput/device/samples_per_sec: 20.2514
+	 Train throughput/tokens_per_sec: 20737.4471
+	 Train throughput/device/tokens_per_sec: 5184.3618
+	 Train time/train: 0.0195
+	 Train time/val: 0.0001
+	 Train time/total: 0.0196
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=1][batch=360/382]:
+	 Train time/batch: 359
+	 Train time/sample: 5744
+	 Train time/batch_in_epoch: 359
+	 Train time/sample_in_epoch: 5744
+	 Train time/token: 1470464
+	 Train time/token_in_epoch: 1470464
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.1745
+	 Train metrics/train/MulticlassAccuracy: 0.8750
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.7333
+	 Train metrics/train/BinaryF1Score: 0.8333
+	 Train throughput/batches_per_sec: 5.0630
+	 Train throughput/samples_per_sec: 81.0077
+	 Train throughput/device/batches_per_sec: 1.2657
+	 Train throughput/device/samples_per_sec: 20.2519
+	 Train throughput/tokens_per_sec: 20737.9658
+	 Train throughput/device/tokens_per_sec: 5184.4914
+	 Train time/train: 0.0201
+	 Train time/val: 0.0001
+	 Train time/total: 0.0202
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=1][batch=370/382]:
+	 Train time/batch: 369
+	 Train time/sample: 5904
+	 Train time/batch_in_epoch: 369
+	 Train time/sample_in_epoch: 5904
+	 Train time/token: 1511424
+	 Train time/token_in_epoch: 1511424
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.3322
+	 Train metrics/train/MulticlassAccuracy: 0.8750
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.7460
+	 Train metrics/train/BinaryF1Score: 0.8889
+	 Train throughput/batches_per_sec: 5.0671
+	 Train throughput/samples_per_sec: 81.0744
+	 Train throughput/device/batches_per_sec: 1.2668
+	 Train throughput/device/samples_per_sec: 20.2686
+	 Train throughput/tokens_per_sec: 20755.0396
+	 Train throughput/device/tokens_per_sec: 5188.7599
+	 Train time/train: 0.0206
+	 Train time/val: 0.0001
+	 Train time/total: 0.0207
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=1][batch=380/382]:
+	 Train time/batch: 379
+	 Train time/sample: 6064
+	 Train time/batch_in_epoch: 379
+	 Train time/sample_in_epoch: 6064
+	 Train time/token: 1552384
+	 Train time/token_in_epoch: 1552384
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.5535
+	 Train metrics/train/MulticlassAccuracy: 0.7500
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.5447
+	 Train metrics/train/BinaryF1Score: 0.8182
+	 Train throughput/batches_per_sec: 5.0732
+	 Train throughput/samples_per_sec: 81.1708
+	 Train throughput/device/batches_per_sec: 1.2683
+	 Train throughput/device/samples_per_sec: 20.2927
+	 Train throughput/tokens_per_sec: 20779.7205
+	 Train throughput/device/tokens_per_sec: 5194.9301
+	 Train time/train: 0.0212
+	 Train time/val: 0.0001
+	 Train time/total: 0.0213
+	 Train lr-DecoupledAdamW/group0: 0.0000
+/usr/local/lib/python3.10/dist-packages/composer/core/data_spec.py:35: UserWarning: Cannot split tensor of length 1 into batches of size 4. As it is smaller, no splitting will be done. This may happen on the last batch of a dataset if it is a smaller size than the microbatch size.
+  warnings.warn(f'Cannot split tensor of length {len(t)} into batches of size {microbatch_size}. '
+[epoch=2][batch=8/382]:
+	 Train time/batch: 389
+	 Train time/sample: 6212
+	 Train time/batch_in_epoch: 7
+	 Train time/sample_in_epoch: 112
+	 Train time/token: 1590272
+	 Train time/token_in_epoch: 28672
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.4408
+	 Train metrics/train/MulticlassAccuracy: 0.8125
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.6742
+	 Train metrics/train/BinaryF1Score: 0.7692
+	 Train throughput/batches_per_sec: 5.0306
+	 Train throughput/samples_per_sec: 79.2828
+	 Train throughput/device/batches_per_sec: 1.2577
+	 Train throughput/device/samples_per_sec: 19.8207
+	 Train throughput/tokens_per_sec: 20296.3949
+	 Train throughput/device/tokens_per_sec: 5074.0987
+	 Train time/train: 0.0217
+	 Train time/val: 0.0001
+	 Train time/total: 0.0218
+	 Train lr-DecoupledAdamW/group0: 0.0000
+	 Train time/epoch: 1
+[epoch=2][batch=18/382]:
+	 Train time/batch: 399
+	 Train time/sample: 6372
+	 Train time/batch_in_epoch: 17
+	 Train time/sample_in_epoch: 272
+	 Train time/token: 1631232
+	 Train time/token_in_epoch: 69632
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.1298
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0279
+	 Train throughput/samples_per_sec: 79.2405
+	 Train throughput/device/batches_per_sec: 1.2570
+	 Train throughput/device/samples_per_sec: 19.8101
+	 Train throughput/tokens_per_sec: 20285.5613
+	 Train throughput/device/tokens_per_sec: 5071.3903
+	 Train time/train: 0.0223
+	 Train time/val: 0.0001
+	 Train time/total: 0.0224
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[Eval batch=1/20] Eval on eval data
+[Eval batch=3/20] Eval on eval data
+[Eval batch=5/20] Eval on eval data
+[Eval batch=7/20] Eval on eval data
+[Eval batch=9/20] Eval on eval data
+[Eval batch=10/20] Eval on eval data
+[Eval batch=12/20] Eval on eval data
+[Eval batch=14/20] Eval on eval data
+[Eval batch=16/20] Eval on eval data
+[Eval batch=18/20] Eval on eval data
+[Eval batch=20/20] Eval on eval data:
+	 Eval metrics/eval/MulticlassAccuracy: 0.9250
+	 Eval metrics/eval/MulticlassMatthewsCorrCoef: 0.8452
+	 Eval metrics/eval/BinaryF1Score: 0.9077
+[epoch=2][batch=28/382]:
+	 Train time/batch: 409
+	 Train time/sample: 6532
+	 Train time/batch_in_epoch: 27
+	 Train time/sample_in_epoch: 432
+	 Train time/token: 1672192
+	 Train time/token_in_epoch: 110592
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.1966
+	 Train metrics/train/MulticlassAccuracy: 0.8750
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.7333
+	 Train metrics/train/BinaryF1Score: 0.8333
+	 Train throughput/batches_per_sec: 5.0287
+	 Train throughput/samples_per_sec: 79.2526
+	 Train throughput/device/batches_per_sec: 1.2572
+	 Train throughput/device/samples_per_sec: 19.8131
+	 Train throughput/tokens_per_sec: 20288.6584
+	 Train throughput/device/tokens_per_sec: 5072.1646
+	 Train time/train: 0.0228
+	 Train time/val: 0.0002
+	 Train time/total: 0.0230
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=2][batch=38/382]:
+	 Train time/batch: 419
+	 Train time/sample: 6692
+	 Train time/batch_in_epoch: 37
+	 Train time/sample_in_epoch: 592
+	 Train time/token: 1713152
+	 Train time/token_in_epoch: 151552
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0725
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0240
+	 Train throughput/samples_per_sec: 79.1788
+	 Train throughput/device/batches_per_sec: 1.2560
+	 Train throughput/device/samples_per_sec: 19.7947
+	 Train throughput/tokens_per_sec: 20269.7706
+	 Train throughput/device/tokens_per_sec: 5067.4426
+	 Train time/train: 0.0234
+	 Train time/val: 0.0002
+	 Train time/total: 0.0236
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=2][batch=48/382]:
+	 Train time/batch: 429
+	 Train time/sample: 6852
+	 Train time/batch_in_epoch: 47
+	 Train time/sample_in_epoch: 752
+	 Train time/token: 1754112
+	 Train time/token_in_epoch: 192512
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0856
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0131
+	 Train throughput/samples_per_sec: 79.0060
+	 Train throughput/device/batches_per_sec: 1.2533
+	 Train throughput/device/samples_per_sec: 19.7515
+	 Train throughput/tokens_per_sec: 20225.5259
+	 Train throughput/device/tokens_per_sec: 5056.3815
+	 Train time/train: 0.0239
+	 Train time/val: 0.0002
+	 Train time/total: 0.0241
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=2][batch=58/382]:
+	 Train time/batch: 439
+	 Train time/sample: 7012
+	 Train time/batch_in_epoch: 57
+	 Train time/sample_in_epoch: 912
+	 Train time/token: 1795072
+	 Train time/token_in_epoch: 233472
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.3640
+	 Train metrics/train/MulticlassAccuracy: 0.8125
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.6831
+	 Train metrics/train/BinaryF1Score: 0.8000
+	 Train throughput/batches_per_sec: 5.0544
+	 Train throughput/samples_per_sec: 80.8697
+	 Train throughput/device/batches_per_sec: 1.2636
+	 Train throughput/device/samples_per_sec: 20.2174
+	 Train throughput/tokens_per_sec: 20702.6320
+	 Train throughput/device/tokens_per_sec: 5175.6580
+	 Train time/train: 0.0245
+	 Train time/val: 0.0002
+	 Train time/total: 0.0247
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=2][batch=68/382]:
+	 Train time/batch: 449
+	 Train time/sample: 7172
+	 Train time/batch_in_epoch: 67
+	 Train time/sample_in_epoch: 1072
+	 Train time/token: 1836032
+	 Train time/token_in_epoch: 274432
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.2948
+	 Train metrics/train/MulticlassAccuracy: 0.8750
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.7500
+	 Train metrics/train/BinaryF1Score: 0.8750
+	 Train throughput/batches_per_sec: 5.0541
+	 Train throughput/samples_per_sec: 80.8655
+	 Train throughput/device/batches_per_sec: 1.2635
+	 Train throughput/device/samples_per_sec: 20.2164
+	 Train throughput/tokens_per_sec: 20701.5710
+	 Train throughput/device/tokens_per_sec: 5175.3927
+	 Train time/train: 0.0250
+	 Train time/val: 0.0002
+	 Train time/total: 0.0252
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=2][batch=78/382]:
+	 Train time/batch: 459
+	 Train time/sample: 7332
+	 Train time/batch_in_epoch: 77
+	 Train time/sample_in_epoch: 1232
+	 Train time/token: 1876992
+	 Train time/token_in_epoch: 315392
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0637
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0585
+	 Train throughput/samples_per_sec: 80.9354
+	 Train throughput/device/batches_per_sec: 1.2646
+	 Train throughput/device/samples_per_sec: 20.2338
+	 Train throughput/tokens_per_sec: 20719.4589
+	 Train throughput/device/tokens_per_sec: 5179.8647
+	 Train time/train: 0.0256
+	 Train time/val: 0.0002
+	 Train time/total: 0.0258
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=2][batch=88/382]:
+	 Train time/batch: 469
+	 Train time/sample: 7492
+	 Train time/batch_in_epoch: 87
+	 Train time/sample_in_epoch: 1392
+	 Train time/token: 1917952
+	 Train time/token_in_epoch: 356352
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.1483
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8783
+	 Train metrics/train/BinaryF1Score: 0.9231
+	 Train throughput/batches_per_sec: 5.0574
+	 Train throughput/samples_per_sec: 80.9185
+	 Train throughput/device/batches_per_sec: 1.2644
+	 Train throughput/device/samples_per_sec: 20.2296
+	 Train throughput/tokens_per_sec: 20715.1438
+	 Train throughput/device/tokens_per_sec: 5178.7860
+	 Train time/train: 0.0261
+	 Train time/val: 0.0002
+	 Train time/total: 0.0263
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=2][batch=98/382]:
+	 Train time/batch: 479
+	 Train time/sample: 7652
+	 Train time/batch_in_epoch: 97
+	 Train time/sample_in_epoch: 1552
+	 Train time/token: 1958912
+	 Train time/token_in_epoch: 397312
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.2546
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8704
+	 Train metrics/train/BinaryF1Score: 0.9091
+	 Train throughput/batches_per_sec: 5.0551
+	 Train throughput/samples_per_sec: 80.8823
+	 Train throughput/device/batches_per_sec: 1.2638
+	 Train throughput/device/samples_per_sec: 20.2206
+	 Train throughput/tokens_per_sec: 20705.8742
+	 Train throughput/device/tokens_per_sec: 5176.4685
+	 Train time/train: 0.0267
+	 Train time/val: 0.0002
+	 Train time/total: 0.0269
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=2][batch=108/382]:
+	 Train time/batch: 489
+	 Train time/sample: 7812
+	 Train time/batch_in_epoch: 107
+	 Train time/sample_in_epoch: 1712
+	 Train time/token: 1999872
+	 Train time/token_in_epoch: 438272
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.3486
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8783
+	 Train metrics/train/BinaryF1Score: 0.9474
+	 Train throughput/batches_per_sec: 5.0566
+	 Train throughput/samples_per_sec: 80.9063
+	 Train throughput/device/batches_per_sec: 1.2642
+	 Train throughput/device/samples_per_sec: 20.2266
+	 Train throughput/tokens_per_sec: 20712.0244
+	 Train throughput/device/tokens_per_sec: 5178.0061
+	 Train time/train: 0.0272
+	 Train time/val: 0.0002
+	 Train time/total: 0.0274
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=2][batch=118/382]:
+	 Train time/batch: 499
+	 Train time/sample: 7972
+	 Train time/batch_in_epoch: 117
+	 Train time/sample_in_epoch: 1872
+	 Train time/token: 2040832
+	 Train time/token_in_epoch: 479232
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.4551
+	 Train metrics/train/MulticlassAccuracy: 0.8750
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.7500
+	 Train metrics/train/BinaryF1Score: 0.8750
+	 Train throughput/batches_per_sec: 5.0617
+	 Train throughput/samples_per_sec: 80.9872
+	 Train throughput/device/batches_per_sec: 1.2654
+	 Train throughput/device/samples_per_sec: 20.2468
+	 Train throughput/tokens_per_sec: 20732.7173
+	 Train throughput/device/tokens_per_sec: 5183.1793
+	 Train time/train: 0.0278
+	 Train time/val: 0.0002
+	 Train time/total: 0.0280
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=2][batch=128/382]:
+	 Train time/batch: 509
+	 Train time/sample: 8132
+	 Train time/batch_in_epoch: 127
+	 Train time/sample_in_epoch: 2032
+	 Train time/token: 2081792
+	 Train time/token_in_epoch: 520192
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.2610
+	 Train metrics/train/MulticlassAccuracy: 0.8750
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.7778
+	 Train metrics/train/BinaryF1Score: 0.8750
+	 Train throughput/batches_per_sec: 5.0611
+	 Train throughput/samples_per_sec: 80.9775
+	 Train throughput/device/batches_per_sec: 1.2653
+	 Train throughput/device/samples_per_sec: 20.2444
+	 Train throughput/tokens_per_sec: 20730.2514
+	 Train throughput/device/tokens_per_sec: 5182.5629
+	 Train time/train: 0.0283
+	 Train time/val: 0.0002
+	 Train time/total: 0.0285
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=2][batch=138/382]:
+	 Train time/batch: 519
+	 Train time/sample: 8292
+	 Train time/batch_in_epoch: 137
+	 Train time/sample_in_epoch: 2192
+	 Train time/token: 2122752
+	 Train time/token_in_epoch: 561152
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.4466
+	 Train metrics/train/MulticlassAccuracy: 0.8750
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.7333
+	 Train metrics/train/BinaryF1Score: 0.9000
+	 Train throughput/batches_per_sec: 4.9571
+	 Train throughput/samples_per_sec: 79.3137
+	 Train throughput/device/batches_per_sec: 1.2393
+	 Train throughput/device/samples_per_sec: 19.8284
+	 Train throughput/tokens_per_sec: 20304.3169
+	 Train throughput/device/tokens_per_sec: 5076.0792
+	 Train time/train: 0.0289
+	 Train time/val: 0.0002
+	 Train time/total: 0.0291
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=2][batch=148/382]:
+	 Train time/batch: 529
+	 Train time/sample: 8452
+	 Train time/batch_in_epoch: 147
+	 Train time/sample_in_epoch: 2352
+	 Train time/token: 2163712
+	 Train time/token_in_epoch: 602112
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.4222
+	 Train metrics/train/MulticlassAccuracy: 0.8125
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.6299
+	 Train metrics/train/BinaryF1Score: 0.8235
+	 Train throughput/batches_per_sec: 4.9596
+	 Train throughput/samples_per_sec: 79.3531
+	 Train throughput/device/batches_per_sec: 1.2399
+	 Train throughput/device/samples_per_sec: 19.8383
+	 Train throughput/tokens_per_sec: 20314.3950
+	 Train throughput/device/tokens_per_sec: 5078.5988
+	 Train time/train: 0.0295
+	 Train time/val: 0.0002
+	 Train time/total: 0.0297
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=2][batch=158/382]:
+	 Train time/batch: 539
+	 Train time/sample: 8612
+	 Train time/batch_in_epoch: 157
+	 Train time/sample_in_epoch: 2512
+	 Train time/token: 2204672
+	 Train time/token_in_epoch: 643072
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.2022
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8819
+	 Train metrics/train/BinaryF1Score: 0.9333
+	 Train throughput/batches_per_sec: 4.9497
+	 Train throughput/samples_per_sec: 79.1946
+	 Train throughput/device/batches_per_sec: 1.2374
+	 Train throughput/device/samples_per_sec: 19.7986
+	 Train throughput/tokens_per_sec: 20273.8073
+	 Train throughput/device/tokens_per_sec: 5068.4518
+	 Train time/train: 0.0300
+	 Train time/val: 0.0002
+	 Train time/total: 0.0302
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=2][batch=168/382]:
+	 Train time/batch: 549
+	 Train time/sample: 8772
+	 Train time/batch_in_epoch: 167
+	 Train time/sample_in_epoch: 2672
+	 Train time/token: 2245632
+	 Train time/token_in_epoch: 684032
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.2434
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8819
+	 Train metrics/train/BinaryF1Score: 0.9333
+	 Train throughput/batches_per_sec: 4.9416
+	 Train throughput/samples_per_sec: 79.0654
+	 Train throughput/device/batches_per_sec: 1.2354
+	 Train throughput/device/samples_per_sec: 19.7663
+	 Train throughput/tokens_per_sec: 20240.7383
+	 Train throughput/device/tokens_per_sec: 5060.1846
+	 Train time/train: 0.0306
+	 Train time/val: 0.0002
+	 Train time/total: 0.0308
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=2][batch=178/382]:
+	 Train time/batch: 559
+	 Train time/sample: 8932
+	 Train time/batch_in_epoch: 177
+	 Train time/sample_in_epoch: 2832
+	 Train time/token: 2286592
+	 Train time/token_in_epoch: 724992
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.1780
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8704
+	 Train metrics/train/BinaryF1Score: 0.9091
+	 Train throughput/batches_per_sec: 4.9382
+	 Train throughput/samples_per_sec: 79.0106
+	 Train throughput/device/batches_per_sec: 1.2345
+	 Train throughput/device/samples_per_sec: 19.7527
+	 Train throughput/tokens_per_sec: 20226.7210
+	 Train throughput/device/tokens_per_sec: 5056.6802
+	 Train time/train: 0.0311
+	 Train time/val: 0.0002
+	 Train time/total: 0.0313
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=2][batch=188/382]:
+	 Train time/batch: 569
+	 Train time/sample: 9092
+	 Train time/batch_in_epoch: 187
+	 Train time/sample_in_epoch: 2992
+	 Train time/token: 2327552
+	 Train time/token_in_epoch: 765952
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.2186
+	 Train metrics/train/MulticlassAccuracy: 0.8750
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.7645
+	 Train metrics/train/BinaryF1Score: 0.9000
+	 Train throughput/batches_per_sec: 5.0425
+	 Train throughput/samples_per_sec: 80.6802
+	 Train throughput/device/batches_per_sec: 1.2606
+	 Train throughput/device/samples_per_sec: 20.1700
+	 Train throughput/tokens_per_sec: 20654.1204
+	 Train throughput/device/tokens_per_sec: 5163.5301
+	 Train time/train: 0.0317
+	 Train time/val: 0.0002
+	 Train time/total: 0.0319
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=2][batch=198/382]:
+	 Train time/batch: 579
+	 Train time/sample: 9252
+	 Train time/batch_in_epoch: 197
+	 Train time/sample_in_epoch: 3152
+	 Train time/token: 2368512
+	 Train time/token_in_epoch: 806912
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.2319
+	 Train metrics/train/MulticlassAccuracy: 0.8125
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.5449
+	 Train metrics/train/BinaryF1Score: 0.6667
+	 Train throughput/batches_per_sec: 5.0423
+	 Train throughput/samples_per_sec: 80.6774
+	 Train throughput/device/batches_per_sec: 1.2606
+	 Train throughput/device/samples_per_sec: 20.1694
+	 Train throughput/tokens_per_sec: 20653.4206
+	 Train throughput/device/tokens_per_sec: 5163.3551
+	 Train time/train: 0.0322
+	 Train time/val: 0.0002
+	 Train time/total: 0.0324
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=2][batch=208/382]:
+	 Train time/batch: 589
+	 Train time/sample: 9412
+	 Train time/batch_in_epoch: 207
+	 Train time/sample_in_epoch: 3312
+	 Train time/token: 2409472
+	 Train time/token_in_epoch: 847872
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.3532
+	 Train metrics/train/MulticlassAccuracy: 0.8750
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.7333
+	 Train metrics/train/BinaryF1Score: 0.9000
+	 Train throughput/batches_per_sec: 5.0514
+	 Train throughput/samples_per_sec: 80.8221
+	 Train throughput/device/batches_per_sec: 1.2628
+	 Train throughput/device/samples_per_sec: 20.2055
+	 Train throughput/tokens_per_sec: 20690.4676
+	 Train throughput/device/tokens_per_sec: 5172.6169
+	 Train time/train: 0.0328
+	 Train time/val: 0.0002
+	 Train time/total: 0.0330
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=2][batch=218/382]:
+	 Train time/batch: 599
+	 Train time/sample: 9572
+	 Train time/batch_in_epoch: 217
+	 Train time/sample_in_epoch: 3472
+	 Train time/token: 2450432
+	 Train time/token_in_epoch: 888832
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.3018
+	 Train metrics/train/MulticlassAccuracy: 0.8750
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.7746
+	 Train metrics/train/BinaryF1Score: 0.8889
+	 Train throughput/batches_per_sec: 5.0565
+	 Train throughput/samples_per_sec: 80.9041
+	 Train throughput/device/batches_per_sec: 1.2641
+	 Train throughput/device/samples_per_sec: 20.2260
+	 Train throughput/tokens_per_sec: 20711.4567
+	 Train throughput/device/tokens_per_sec: 5177.8642
+	 Train time/train: 0.0333
+	 Train time/val: 0.0002
+	 Train time/total: 0.0335
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[Eval batch=1/20] Eval on eval data
+[Eval batch=3/20] Eval on eval data
+[Eval batch=5/20] Eval on eval data
+[Eval batch=7/20] Eval on eval data
+[Eval batch=9/20] Eval on eval data
+[Eval batch=10/20] Eval on eval data
+[Eval batch=12/20] Eval on eval data
+[Eval batch=14/20] Eval on eval data
+[Eval batch=16/20] Eval on eval data
+[Eval batch=18/20] Eval on eval data
+[Eval batch=20/20] Eval on eval data:
+	 Eval metrics/eval/MulticlassAccuracy: 0.9531
+	 Eval metrics/eval/MulticlassMatthewsCorrCoef: 0.9045
+	 Eval metrics/eval/BinaryF1Score: 0.9446
+[epoch=2][batch=228/382]:
+	 Train time/batch: 609
+	 Train time/sample: 9732
+	 Train time/batch_in_epoch: 227
+	 Train time/sample_in_epoch: 3632
+	 Train time/token: 2491392
+	 Train time/token_in_epoch: 929792
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.1448
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8819
+	 Train metrics/train/BinaryF1Score: 0.9412
+	 Train throughput/batches_per_sec: 4.9531
+	 Train throughput/samples_per_sec: 79.2498
+	 Train throughput/device/batches_per_sec: 1.2383
+	 Train throughput/device/samples_per_sec: 19.8124
+	 Train throughput/tokens_per_sec: 20287.9381
+	 Train throughput/device/tokens_per_sec: 5071.9845
+	 Train time/train: 0.0339
+	 Train time/val: 0.0003
+	 Train time/total: 0.0342
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=2][batch=238/382]:
+	 Train time/batch: 619
+	 Train time/sample: 9892
+	 Train time/batch_in_epoch: 237
+	 Train time/sample_in_epoch: 3792
+	 Train time/token: 2532352
+	 Train time/token_in_epoch: 970752
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0752
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 4.9472
+	 Train throughput/samples_per_sec: 79.1548
+	 Train throughput/device/batches_per_sec: 1.2368
+	 Train throughput/device/samples_per_sec: 19.7887
+	 Train throughput/tokens_per_sec: 20263.6370
+	 Train throughput/device/tokens_per_sec: 5065.9093
+	 Train time/train: 0.0345
+	 Train time/val: 0.0003
+	 Train time/total: 0.0348
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=2][batch=248/382]:
+	 Train time/batch: 629
+	 Train time/sample: 10052
+	 Train time/batch_in_epoch: 247
+	 Train time/sample_in_epoch: 3952
+	 Train time/token: 2573312
+	 Train time/token_in_epoch: 1011712
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.2040
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8704
+	 Train metrics/train/BinaryF1Score: 0.9091
+	 Train throughput/batches_per_sec: 4.7583
+	 Train throughput/samples_per_sec: 76.1327
+	 Train throughput/device/batches_per_sec: 1.1896
+	 Train throughput/device/samples_per_sec: 19.0332
+	 Train throughput/tokens_per_sec: 19489.9681
+	 Train throughput/device/tokens_per_sec: 4872.4920
+	 Train time/train: 0.0352
+	 Train time/val: 0.0003
+	 Train time/total: 0.0354
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=2][batch=258/382]:
+	 Train time/batch: 639
+	 Train time/sample: 10212
+	 Train time/batch_in_epoch: 257
+	 Train time/sample_in_epoch: 4112
+	 Train time/token: 2614272
+	 Train time/token_in_epoch: 1052672
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.2251
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8819
+	 Train metrics/train/BinaryF1Score: 0.9333
+	 Train throughput/batches_per_sec: 4.7586
+	 Train throughput/samples_per_sec: 76.1371
+	 Train throughput/device/batches_per_sec: 1.1896
+	 Train throughput/device/samples_per_sec: 19.0343
+	 Train throughput/tokens_per_sec: 19491.0977
+	 Train throughput/device/tokens_per_sec: 4872.7744
+	 Train time/train: 0.0357
+	 Train time/val: 0.0003
+	 Train time/total: 0.0360
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=2][batch=268/382]:
+	 Train time/batch: 649
+	 Train time/sample: 10372
+	 Train time/batch_in_epoch: 267
+	 Train time/sample_in_epoch: 4272
+	 Train time/token: 2655232
+	 Train time/token_in_epoch: 1093632
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.3246
+	 Train metrics/train/MulticlassAccuracy: 0.8750
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.7746
+	 Train metrics/train/BinaryF1Score: 0.8571
+	 Train throughput/batches_per_sec: 4.7577
+	 Train throughput/samples_per_sec: 76.1233
+	 Train throughput/device/batches_per_sec: 1.1894
+	 Train throughput/device/samples_per_sec: 19.0308
+	 Train throughput/tokens_per_sec: 19487.5590
+	 Train throughput/device/tokens_per_sec: 4871.8898
+	 Train time/train: 0.0363
+	 Train time/val: 0.0003
+	 Train time/total: 0.0365
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=2][batch=278/382]:
+	 Train time/batch: 659
+	 Train time/sample: 10532
+	 Train time/batch_in_epoch: 277
+	 Train time/sample_in_epoch: 4432
+	 Train time/token: 2696192
+	 Train time/token_in_epoch: 1134592
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.1120
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8783
+	 Train metrics/train/BinaryF1Score: 0.9474
+	 Train throughput/batches_per_sec: 4.8525
+	 Train throughput/samples_per_sec: 77.6394
+	 Train throughput/device/batches_per_sec: 1.2131
+	 Train throughput/device/samples_per_sec: 19.4098
+	 Train throughput/tokens_per_sec: 19875.6780
+	 Train throughput/device/tokens_per_sec: 4968.9195
+	 Train time/train: 0.0368
+	 Train time/val: 0.0003
+	 Train time/total: 0.0371
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=2][batch=288/382]:
+	 Train time/batch: 669
+	 Train time/sample: 10692
+	 Train time/batch_in_epoch: 287
+	 Train time/sample_in_epoch: 4592
+	 Train time/token: 2737152
+	 Train time/token_in_epoch: 1175552
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.4252
+	 Train metrics/train/MulticlassAccuracy: 0.8125
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.6742
+	 Train metrics/train/BinaryF1Score: 0.8421
+	 Train throughput/batches_per_sec: 4.8563
+	 Train throughput/samples_per_sec: 77.7004
+	 Train throughput/device/batches_per_sec: 1.2141
+	 Train throughput/device/samples_per_sec: 19.4251
+	 Train throughput/tokens_per_sec: 19891.3107
+	 Train throughput/device/tokens_per_sec: 4972.8277
+	 Train time/train: 0.0374
+	 Train time/val: 0.0003
+	 Train time/total: 0.0376
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=2][batch=298/382]:
+	 Train time/batch: 679
+	 Train time/sample: 10852
+	 Train time/batch_in_epoch: 297
+	 Train time/sample_in_epoch: 4752
+	 Train time/token: 2778112
+	 Train time/token_in_epoch: 1216512
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.3207
+	 Train metrics/train/MulticlassAccuracy: 0.8750
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.7500
+	 Train metrics/train/BinaryF1Score: 0.8750
+	 Train throughput/batches_per_sec: 5.0543
+	 Train throughput/samples_per_sec: 80.8680
+	 Train throughput/device/batches_per_sec: 1.2636
+	 Train throughput/device/samples_per_sec: 20.2170
+	 Train throughput/tokens_per_sec: 20702.2134
+	 Train throughput/device/tokens_per_sec: 5175.5534
+	 Train time/train: 0.0379
+	 Train time/val: 0.0003
+	 Train time/total: 0.0382
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=2][batch=308/382]:
+	 Train time/batch: 689
+	 Train time/sample: 11012
+	 Train time/batch_in_epoch: 307
+	 Train time/sample_in_epoch: 4912
+	 Train time/token: 2819072
+	 Train time/token_in_epoch: 1257472
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0215
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0537
+	 Train throughput/samples_per_sec: 80.8600
+	 Train throughput/device/batches_per_sec: 1.2634
+	 Train throughput/device/samples_per_sec: 20.2150
+	 Train throughput/tokens_per_sec: 20700.1544
+	 Train throughput/device/tokens_per_sec: 5175.0386
+	 Train time/train: 0.0385
+	 Train time/val: 0.0003
+	 Train time/total: 0.0387
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=2][batch=318/382]:
+	 Train time/batch: 699
+	 Train time/sample: 11172
+	 Train time/batch_in_epoch: 317
+	 Train time/sample_in_epoch: 5072
+	 Train time/token: 2860032
+	 Train time/token_in_epoch: 1298432
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.4404
+	 Train metrics/train/MulticlassAccuracy: 0.8125
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.6181
+	 Train metrics/train/BinaryF1Score: 0.7692
+	 Train throughput/batches_per_sec: 5.0522
+	 Train throughput/samples_per_sec: 80.8353
+	 Train throughput/device/batches_per_sec: 1.2631
+	 Train throughput/device/samples_per_sec: 20.2088
+	 Train throughput/tokens_per_sec: 20693.8482
+	 Train throughput/device/tokens_per_sec: 5173.4620
+	 Train time/train: 0.0390
+	 Train time/val: 0.0003
+	 Train time/total: 0.0393
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=2][batch=328/382]:
+	 Train time/batch: 709
+	 Train time/sample: 11332
+	 Train time/batch_in_epoch: 327
+	 Train time/sample_in_epoch: 5232
+	 Train time/token: 2900992
+	 Train time/token_in_epoch: 1339392
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0341
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0507
+	 Train throughput/samples_per_sec: 80.8110
+	 Train throughput/device/batches_per_sec: 1.2627
+	 Train throughput/device/samples_per_sec: 20.2027
+	 Train throughput/tokens_per_sec: 20687.6084
+	 Train throughput/device/tokens_per_sec: 5171.9021
+	 Train time/train: 0.0396
+	 Train time/val: 0.0003
+	 Train time/total: 0.0398
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=2][batch=338/382]:
+	 Train time/batch: 719
+	 Train time/sample: 11492
+	 Train time/batch_in_epoch: 337
+	 Train time/sample_in_epoch: 5392
+	 Train time/token: 2941952
+	 Train time/token_in_epoch: 1380352
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.2378
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8783
+	 Train metrics/train/BinaryF1Score: 0.9474
+	 Train throughput/batches_per_sec: 5.0527
+	 Train throughput/samples_per_sec: 80.8433
+	 Train throughput/device/batches_per_sec: 1.2632
+	 Train throughput/device/samples_per_sec: 20.2108
+	 Train throughput/tokens_per_sec: 20695.8745
+	 Train throughput/device/tokens_per_sec: 5173.9686
+	 Train time/train: 0.0401
+	 Train time/val: 0.0003
+	 Train time/total: 0.0404
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=2][batch=348/382]:
+	 Train time/batch: 729
+	 Train time/sample: 11652
+	 Train time/batch_in_epoch: 347
+	 Train time/sample_in_epoch: 5552
+	 Train time/token: 2982912
+	 Train time/token_in_epoch: 1421312
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.1320
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8819
+	 Train metrics/train/BinaryF1Score: 0.9333
+	 Train throughput/batches_per_sec: 5.0508
+	 Train throughput/samples_per_sec: 80.8123
+	 Train throughput/device/batches_per_sec: 1.2627
+	 Train throughput/device/samples_per_sec: 20.2031
+	 Train throughput/tokens_per_sec: 20687.9616
+	 Train throughput/device/tokens_per_sec: 5171.9904
+	 Train time/train: 0.0407
+	 Train time/val: 0.0003
+	 Train time/total: 0.0409
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=2][batch=358/382]:
+	 Train time/batch: 739
+	 Train time/sample: 11812
+	 Train time/batch_in_epoch: 357
+	 Train time/sample_in_epoch: 5712
+	 Train time/token: 3023872
+	 Train time/token_in_epoch: 1462272
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0791
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0532
+	 Train throughput/samples_per_sec: 80.8511
+	 Train throughput/device/batches_per_sec: 1.2633
+	 Train throughput/device/samples_per_sec: 20.2128
+	 Train throughput/tokens_per_sec: 20697.8908
+	 Train throughput/device/tokens_per_sec: 5174.4727
+	 Train time/train: 0.0412
+	 Train time/val: 0.0003
+	 Train time/total: 0.0415
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=2][batch=368/382]:
+	 Train time/batch: 749
+	 Train time/sample: 11972
+	 Train time/batch_in_epoch: 367
+	 Train time/sample_in_epoch: 5872
+	 Train time/token: 3064832
+	 Train time/token_in_epoch: 1503232
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.4277
+	 Train metrics/train/MulticlassAccuracy: 0.7500
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.4927
+	 Train metrics/train/BinaryF1Score: 0.6667
+	 Train throughput/batches_per_sec: 5.0584
+	 Train throughput/samples_per_sec: 80.9339
+	 Train throughput/device/batches_per_sec: 1.2646
+	 Train throughput/device/samples_per_sec: 20.2335
+	 Train throughput/tokens_per_sec: 20719.0879
+	 Train throughput/device/tokens_per_sec: 5179.7720
+	 Train time/train: 0.0418
+	 Train time/val: 0.0003
+	 Train time/total: 0.0420
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=2][batch=378/382]:
+	 Train time/batch: 759
+	 Train time/sample: 12132
+	 Train time/batch_in_epoch: 377
+	 Train time/sample_in_epoch: 6032
+	 Train time/token: 3105792
+	 Train time/token_in_epoch: 1544192
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0956
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0754
+	 Train throughput/samples_per_sec: 81.2060
+	 Train throughput/device/batches_per_sec: 1.2688
+	 Train throughput/device/samples_per_sec: 20.3015
+	 Train throughput/tokens_per_sec: 20788.7314
+	 Train throughput/device/tokens_per_sec: 5197.1828
+	 Train time/train: 0.0423
+	 Train time/val: 0.0003
+	 Train time/total: 0.0426
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=3][batch=6/382]:
+	 Train time/batch: 769
+	 Train time/sample: 12280
+	 Train time/batch_in_epoch: 5
+	 Train time/sample_in_epoch: 80
+	 Train time/token: 3143680
+	 Train time/token_in_epoch: 20480
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0227
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0637
+	 Train throughput/samples_per_sec: 79.8036
+	 Train throughput/device/batches_per_sec: 1.2659
+	 Train throughput/device/samples_per_sec: 19.9509
+	 Train throughput/tokens_per_sec: 20429.7242
+	 Train throughput/device/tokens_per_sec: 5107.4311
+	 Train time/train: 0.0428
+	 Train time/val: 0.0003
+	 Train time/total: 0.0431
+	 Train lr-DecoupledAdamW/group0: 0.0000
+	 Train time/epoch: 2
+[epoch=3][batch=16/382]:
+	 Train time/batch: 779
+	 Train time/sample: 12440
+	 Train time/batch_in_epoch: 15
+	 Train time/sample_in_epoch: 240
+	 Train time/token: 3184640
+	 Train time/token_in_epoch: 61440
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.1785
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8819
+	 Train metrics/train/BinaryF1Score: 0.9333
+	 Train throughput/batches_per_sec: 5.0636
+	 Train throughput/samples_per_sec: 79.8023
+	 Train throughput/device/batches_per_sec: 1.2659
+	 Train throughput/device/samples_per_sec: 19.9506
+	 Train throughput/tokens_per_sec: 20429.3787
+	 Train throughput/device/tokens_per_sec: 5107.3447
+	 Train time/train: 0.0434
+	 Train time/val: 0.0003
+	 Train time/total: 0.0437
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=3][batch=26/382]:
+	 Train time/batch: 789
+	 Train time/sample: 12600
+	 Train time/batch_in_epoch: 25
+	 Train time/sample_in_epoch: 400
+	 Train time/token: 3225600
+	 Train time/token_in_epoch: 102400
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0514
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0586
+	 Train throughput/samples_per_sec: 79.7241
+	 Train throughput/device/batches_per_sec: 1.2647
+	 Train throughput/device/samples_per_sec: 19.9310
+	 Train throughput/tokens_per_sec: 20409.3588
+	 Train throughput/device/tokens_per_sec: 5102.3397
+	 Train time/train: 0.0439
+	 Train time/val: 0.0003
+	 Train time/total: 0.0442
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=3][batch=36/382]:
+	 Train time/batch: 799
+	 Train time/sample: 12760
+	 Train time/batch_in_epoch: 35
+	 Train time/sample_in_epoch: 560
+	 Train time/token: 3266560
+	 Train time/token_in_epoch: 143360
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0240
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0557
+	 Train throughput/samples_per_sec: 79.6772
+	 Train throughput/device/batches_per_sec: 1.2639
+	 Train throughput/device/samples_per_sec: 19.9193
+	 Train throughput/tokens_per_sec: 20397.3689
+	 Train throughput/device/tokens_per_sec: 5099.3422
+	 Train time/train: 0.0445
+	 Train time/val: 0.0003
+	 Train time/total: 0.0448
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[Eval batch=1/20] Eval on eval data
+[Eval batch=3/20] Eval on eval data
+[Eval batch=5/20] Eval on eval data
+[Eval batch=7/20] Eval on eval data
+[Eval batch=9/20] Eval on eval data
+[Eval batch=10/20] Eval on eval data
+[Eval batch=12/20] Eval on eval data
+[Eval batch=14/20] Eval on eval data
+[Eval batch=16/20] Eval on eval data
+[Eval batch=18/20] Eval on eval data
+[Eval batch=20/20] Eval on eval data:
+	 Eval metrics/eval/MulticlassAccuracy: 0.9750
+	 Eval metrics/eval/MulticlassMatthewsCorrCoef: 0.9484
+	 Eval metrics/eval/BinaryF1Score: 0.9695
+[epoch=3][batch=46/382]:
+	 Train time/batch: 809
+	 Train time/sample: 12920
+	 Train time/batch_in_epoch: 45
+	 Train time/sample_in_epoch: 720
+	 Train time/token: 3307520
+	 Train time/token_in_epoch: 184320
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.1069
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8563
+	 Train metrics/train/BinaryF1Score: 0.8889
+	 Train throughput/batches_per_sec: 5.0412
+	 Train throughput/samples_per_sec: 79.4498
+	 Train throughput/device/batches_per_sec: 1.2603
+	 Train throughput/device/samples_per_sec: 19.8624
+	 Train throughput/tokens_per_sec: 20339.1375
+	 Train throughput/device/tokens_per_sec: 5084.7844
+	 Train time/train: 0.0450
+	 Train time/val: 0.0004
+	 Train time/total: 0.0454
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=3][batch=56/382]:
+	 Train time/batch: 819
+	 Train time/sample: 13080
+	 Train time/batch_in_epoch: 55
+	 Train time/sample_in_epoch: 880
+	 Train time/token: 3348480
+	 Train time/token_in_epoch: 225280
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.1336
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8819
+	 Train metrics/train/BinaryF1Score: 0.9333
+	 Train throughput/batches_per_sec: 5.0536
+	 Train throughput/samples_per_sec: 80.8573
+	 Train throughput/device/batches_per_sec: 1.2634
+	 Train throughput/device/samples_per_sec: 20.2143
+	 Train throughput/tokens_per_sec: 20699.4786
+	 Train throughput/device/tokens_per_sec: 5174.8697
+	 Train time/train: 0.0456
+	 Train time/val: 0.0004
+	 Train time/total: 0.0460
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=3][batch=66/382]:
+	 Train time/batch: 829
+	 Train time/sample: 13240
+	 Train time/batch_in_epoch: 65
+	 Train time/sample_in_epoch: 1040
+	 Train time/token: 3389440
+	 Train time/token_in_epoch: 266240
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0285
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0595
+	 Train throughput/samples_per_sec: 80.9522
+	 Train throughput/device/batches_per_sec: 1.2649
+	 Train throughput/device/samples_per_sec: 20.2380
+	 Train throughput/tokens_per_sec: 20723.7570
+	 Train throughput/device/tokens_per_sec: 5180.9392
+	 Train time/train: 0.0461
+	 Train time/val: 0.0004
+	 Train time/total: 0.0465
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=3][batch=76/382]:
+	 Train time/batch: 839
+	 Train time/sample: 13400
+	 Train time/batch_in_epoch: 75
+	 Train time/sample_in_epoch: 1200
+	 Train time/token: 3430400
+	 Train time/token_in_epoch: 307200
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0207
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0641
+	 Train throughput/samples_per_sec: 81.0256
+	 Train throughput/device/batches_per_sec: 1.2660
+	 Train throughput/device/samples_per_sec: 20.2564
+	 Train throughput/tokens_per_sec: 20742.5635
+	 Train throughput/device/tokens_per_sec: 5185.6409
+	 Train time/train: 0.0467
+	 Train time/val: 0.0004
+	 Train time/total: 0.0471
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=3][batch=86/382]:
+	 Train time/batch: 849
+	 Train time/sample: 13560
+	 Train time/batch_in_epoch: 85
+	 Train time/sample_in_epoch: 1360
+	 Train time/token: 3471360
+	 Train time/token_in_epoch: 348160
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0419
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0625
+	 Train throughput/samples_per_sec: 80.9998
+	 Train throughput/device/batches_per_sec: 1.2656
+	 Train throughput/device/samples_per_sec: 20.2499
+	 Train throughput/tokens_per_sec: 20735.9438
+	 Train throughput/device/tokens_per_sec: 5183.9859
+	 Train time/train: 0.0472
+	 Train time/val: 0.0004
+	 Train time/total: 0.0476
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=3][batch=96/382]:
+	 Train time/batch: 859
+	 Train time/sample: 13720
+	 Train time/batch_in_epoch: 95
+	 Train time/sample_in_epoch: 1520
+	 Train time/token: 3512320
+	 Train time/token_in_epoch: 389120
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0947
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8783
+	 Train metrics/train/BinaryF1Score: 0.9231
+	 Train throughput/batches_per_sec: 5.0631
+	 Train throughput/samples_per_sec: 81.0102
+	 Train throughput/device/batches_per_sec: 1.2658
+	 Train throughput/device/samples_per_sec: 20.2525
+	 Train throughput/tokens_per_sec: 20738.6084
+	 Train throughput/device/tokens_per_sec: 5184.6521
+	 Train time/train: 0.0478
+	 Train time/val: 0.0004
+	 Train time/total: 0.0482
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=3][batch=106/382]:
+	 Train time/batch: 869
+	 Train time/sample: 13880
+	 Train time/batch_in_epoch: 105
+	 Train time/sample_in_epoch: 1680
+	 Train time/token: 3553280
+	 Train time/token_in_epoch: 430080
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.1119
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8819
+	 Train metrics/train/BinaryF1Score: 0.9333
+	 Train throughput/batches_per_sec: 5.0595
+	 Train throughput/samples_per_sec: 80.9528
+	 Train throughput/device/batches_per_sec: 1.2649
+	 Train throughput/device/samples_per_sec: 20.2382
+	 Train throughput/tokens_per_sec: 20723.9122
+	 Train throughput/device/tokens_per_sec: 5180.9780
+	 Train time/train: 0.0483
+	 Train time/val: 0.0004
+	 Train time/total: 0.0487
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=3][batch=116/382]:
+	 Train time/batch: 879
+	 Train time/sample: 14040
+	 Train time/batch_in_epoch: 115
+	 Train time/sample_in_epoch: 1840
+	 Train time/token: 3594240
+	 Train time/token_in_epoch: 471040
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.1884
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8704
+	 Train metrics/train/BinaryF1Score: 0.9091
+	 Train throughput/batches_per_sec: 5.0567
+	 Train throughput/samples_per_sec: 80.9070
+	 Train throughput/device/batches_per_sec: 1.2642
+	 Train throughput/device/samples_per_sec: 20.2267
+	 Train throughput/tokens_per_sec: 20712.1878
+	 Train throughput/device/tokens_per_sec: 5178.0469
+	 Train time/train: 0.0489
+	 Train time/val: 0.0004
+	 Train time/total: 0.0493
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=3][batch=126/382]:
+	 Train time/batch: 889
+	 Train time/sample: 14200
+	 Train time/batch_in_epoch: 125
+	 Train time/sample_in_epoch: 2000
+	 Train time/token: 3635200
+	 Train time/token_in_epoch: 512000
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0094
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0595
+	 Train throughput/samples_per_sec: 80.9524
+	 Train throughput/device/batches_per_sec: 1.2649
+	 Train throughput/device/samples_per_sec: 20.2381
+	 Train throughput/tokens_per_sec: 20723.8073
+	 Train throughput/device/tokens_per_sec: 5180.9518
+	 Train time/train: 0.0494
+	 Train time/val: 0.0004
+	 Train time/total: 0.0498
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=3][batch=136/382]:
+	 Train time/batch: 899
+	 Train time/sample: 14360
+	 Train time/batch_in_epoch: 135
+	 Train time/sample_in_epoch: 2160
+	 Train time/token: 3676160
+	 Train time/token_in_epoch: 552960
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0191
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0626
+	 Train throughput/samples_per_sec: 81.0021
+	 Train throughput/device/batches_per_sec: 1.2657
+	 Train throughput/device/samples_per_sec: 20.2505
+	 Train throughput/tokens_per_sec: 20736.5463
+	 Train throughput/device/tokens_per_sec: 5184.1366
+	 Train time/train: 0.0500
+	 Train time/val: 0.0004
+	 Train time/total: 0.0504
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=3][batch=146/382]:
+	 Train time/batch: 909
+	 Train time/sample: 14520
+	 Train time/batch_in_epoch: 145
+	 Train time/sample_in_epoch: 2320
+	 Train time/token: 3717120
+	 Train time/token_in_epoch: 593920
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.2846
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8563
+	 Train metrics/train/BinaryF1Score: 0.8889
+	 Train throughput/batches_per_sec: 5.0614
+	 Train throughput/samples_per_sec: 80.9828
+	 Train throughput/device/batches_per_sec: 1.2654
+	 Train throughput/device/samples_per_sec: 20.2457
+	 Train throughput/tokens_per_sec: 20731.5945
+	 Train throughput/device/tokens_per_sec: 5182.8986
+	 Train time/train: 0.0505
+	 Train time/val: 0.0004
+	 Train time/total: 0.0509
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=3][batch=156/382]:
+	 Train time/batch: 919
+	 Train time/sample: 14680
+	 Train time/batch_in_epoch: 155
+	 Train time/sample_in_epoch: 2480
+	 Train time/token: 3758080
+	 Train time/token_in_epoch: 634880
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0773
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8704
+	 Train metrics/train/BinaryF1Score: 0.9524
+	 Train throughput/batches_per_sec: 5.0657
+	 Train throughput/samples_per_sec: 81.0513
+	 Train throughput/device/batches_per_sec: 1.2664
+	 Train throughput/device/samples_per_sec: 20.2628
+	 Train throughput/tokens_per_sec: 20749.1434
+	 Train throughput/device/tokens_per_sec: 5187.2858
+	 Train time/train: 0.0511
+	 Train time/val: 0.0004
+	 Train time/total: 0.0515
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=3][batch=166/382]:
+	 Train time/batch: 929
+	 Train time/sample: 14840
+	 Train time/batch_in_epoch: 165
+	 Train time/sample_in_epoch: 2640
+	 Train time/token: 3799040
+	 Train time/token_in_epoch: 675840
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.1218
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8819
+	 Train metrics/train/BinaryF1Score: 0.9333
+	 Train throughput/batches_per_sec: 5.0672
+	 Train throughput/samples_per_sec: 81.0757
+	 Train throughput/device/batches_per_sec: 1.2668
+	 Train throughput/device/samples_per_sec: 20.2689
+	 Train throughput/tokens_per_sec: 20755.3803
+	 Train throughput/device/tokens_per_sec: 5188.8451
+	 Train time/train: 0.0516
+	 Train time/val: 0.0004
+	 Train time/total: 0.0520
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=3][batch=176/382]:
+	 Train time/batch: 939
+	 Train time/sample: 15000
+	 Train time/batch_in_epoch: 175
+	 Train time/sample_in_epoch: 2800
+	 Train time/token: 3840000
+	 Train time/token_in_epoch: 716800
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0153
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0631
+	 Train throughput/samples_per_sec: 81.0098
+	 Train throughput/device/batches_per_sec: 1.2658
+	 Train throughput/device/samples_per_sec: 20.2524
+	 Train throughput/tokens_per_sec: 20738.4971
+	 Train throughput/device/tokens_per_sec: 5184.6243
+	 Train time/train: 0.0522
+	 Train time/val: 0.0004
+	 Train time/total: 0.0526
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=3][batch=186/382]:
+	 Train time/batch: 949
+	 Train time/sample: 15160
+	 Train time/batch_in_epoch: 185
+	 Train time/sample_in_epoch: 2960
+	 Train time/token: 3880960
+	 Train time/token_in_epoch: 757760
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.2684
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8819
+	 Train metrics/train/BinaryF1Score: 0.9412
+	 Train throughput/batches_per_sec: 5.0643
+	 Train throughput/samples_per_sec: 81.0280
+	 Train throughput/device/batches_per_sec: 1.2661
+	 Train throughput/device/samples_per_sec: 20.2570
+	 Train throughput/tokens_per_sec: 20743.1707
+	 Train throughput/device/tokens_per_sec: 5185.7927
+	 Train time/train: 0.0527
+	 Train time/val: 0.0004
+	 Train time/total: 0.0531
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=3][batch=196/382]:
+	 Train time/batch: 959
+	 Train time/sample: 15320
+	 Train time/batch_in_epoch: 195
+	 Train time/sample_in_epoch: 3120
+	 Train time/token: 3921920
+	 Train time/token_in_epoch: 798720
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.1456
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8819
+	 Train metrics/train/BinaryF1Score: 0.9333
+	 Train throughput/batches_per_sec: 5.0617
+	 Train throughput/samples_per_sec: 80.9876
+	 Train throughput/device/batches_per_sec: 1.2654
+	 Train throughput/device/samples_per_sec: 20.2469
+	 Train throughput/tokens_per_sec: 20732.8223
+	 Train throughput/device/tokens_per_sec: 5183.2056
+	 Train time/train: 0.0533
+	 Train time/val: 0.0004
+	 Train time/total: 0.0537
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=3][batch=206/382]:
+	 Train time/batch: 969
+	 Train time/sample: 15480
+	 Train time/batch_in_epoch: 205
+	 Train time/sample_in_epoch: 3280
+	 Train time/token: 3962880
+	 Train time/token_in_epoch: 839680
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0747
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.7868
+	 Train metrics/train/BinaryF1Score: 0.8000
+	 Train throughput/batches_per_sec: 5.0603
+	 Train throughput/samples_per_sec: 80.9655
+	 Train throughput/device/batches_per_sec: 1.2651
+	 Train throughput/device/samples_per_sec: 20.2414
+	 Train throughput/tokens_per_sec: 20727.1715
+	 Train throughput/device/tokens_per_sec: 5181.7929
+	 Train time/train: 0.0538
+	 Train time/val: 0.0004
+	 Train time/total: 0.0542
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=3][batch=216/382]:
+	 Train time/batch: 979
+	 Train time/sample: 15640
+	 Train time/batch_in_epoch: 215
+	 Train time/sample_in_epoch: 3440
+	 Train time/token: 4003840
+	 Train time/token_in_epoch: 880640
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0251
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0583
+	 Train throughput/samples_per_sec: 80.9325
+	 Train throughput/device/batches_per_sec: 1.2646
+	 Train throughput/device/samples_per_sec: 20.2331
+	 Train throughput/tokens_per_sec: 20718.7106
+	 Train throughput/device/tokens_per_sec: 5179.6777
+	 Train time/train: 0.0544
+	 Train time/val: 0.0004
+	 Train time/total: 0.0548
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=3][batch=226/382]:
+	 Train time/batch: 989
+	 Train time/sample: 15800
+	 Train time/batch_in_epoch: 225
+	 Train time/sample_in_epoch: 3600
+	 Train time/token: 4044800
+	 Train time/token_in_epoch: 921600
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0198
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0563
+	 Train throughput/samples_per_sec: 80.9015
+	 Train throughput/device/batches_per_sec: 1.2641
+	 Train throughput/device/samples_per_sec: 20.2254
+	 Train throughput/tokens_per_sec: 20710.7907
+	 Train throughput/device/tokens_per_sec: 5177.6977
+	 Train time/train: 0.0549
+	 Train time/val: 0.0004
+	 Train time/total: 0.0553
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=3][batch=236/382]:
+	 Train time/batch: 999
+	 Train time/sample: 15960
+	 Train time/batch_in_epoch: 235
+	 Train time/sample_in_epoch: 3760
+	 Train time/token: 4085760
+	 Train time/token_in_epoch: 962560
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0906
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8321
+	 Train metrics/train/BinaryF1Score: 0.8571
+	 Train throughput/batches_per_sec: 5.0538
+	 Train throughput/samples_per_sec: 80.8608
+	 Train throughput/device/batches_per_sec: 1.2635
+	 Train throughput/device/samples_per_sec: 20.2152
+	 Train throughput/tokens_per_sec: 20700.3720
+	 Train throughput/device/tokens_per_sec: 5175.0930
+	 Train time/train: 0.0555
+	 Train time/val: 0.0004
+	 Train time/total: 0.0559
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[Eval batch=1/20] Eval on eval data
+[Eval batch=3/20] Eval on eval data
+[Eval batch=5/20] Eval on eval data
+[Eval batch=7/20] Eval on eval data
+[Eval batch=9/20] Eval on eval data
+[Eval batch=10/20] Eval on eval data
+[Eval batch=12/20] Eval on eval data
+[Eval batch=14/20] Eval on eval data
+[Eval batch=16/20] Eval on eval data
+[Eval batch=18/20] Eval on eval data
+[Eval batch=20/20] Eval on eval data:
+	 Eval metrics/eval/MulticlassAccuracy: 0.9844
+	 Eval metrics/eval/MulticlassMatthewsCorrCoef: 0.9679
+	 Eval metrics/eval/BinaryF1Score: 0.9813
+[epoch=3][batch=246/382]:
+	 Train time/batch: 1009
+	 Train time/sample: 16120
+	 Train time/batch_in_epoch: 245
+	 Train time/sample_in_epoch: 3920
+	 Train time/token: 4126720
+	 Train time/token_in_epoch: 1003520
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0563
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 4.1819
+	 Train throughput/samples_per_sec: 66.9100
+	 Train throughput/device/batches_per_sec: 1.0455
+	 Train throughput/device/samples_per_sec: 16.7275
+	 Train throughput/tokens_per_sec: 17128.9575
+	 Train throughput/device/tokens_per_sec: 4282.2394
+	 Train time/train: 0.0566
+	 Train time/val: 0.0005
+	 Train time/total: 0.0571
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=3][batch=256/382]:
+	 Train time/batch: 1019
+	 Train time/sample: 16280
+	 Train time/batch_in_epoch: 255
+	 Train time/sample_in_epoch: 4080
+	 Train time/token: 4167680
+	 Train time/token_in_epoch: 1044480
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.4594
+	 Train metrics/train/MulticlassAccuracy: 0.8125
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.6299
+	 Train metrics/train/BinaryF1Score: 0.8000
+	 Train throughput/batches_per_sec: 4.1856
+	 Train throughput/samples_per_sec: 66.9696
+	 Train throughput/device/batches_per_sec: 1.0464
+	 Train throughput/device/samples_per_sec: 16.7424
+	 Train throughput/tokens_per_sec: 17144.2071
+	 Train throughput/device/tokens_per_sec: 4286.0518
+	 Train time/train: 0.0571
+	 Train time/val: 0.0005
+	 Train time/total: 0.0576
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=3][batch=266/382]:
+	 Train time/batch: 1029
+	 Train time/sample: 16440
+	 Train time/batch_in_epoch: 265
+	 Train time/sample_in_epoch: 4240
+	 Train time/token: 4208640
+	 Train time/token_in_epoch: 1085440
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0967
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8819
+	 Train metrics/train/BinaryF1Score: 0.9333
+	 Train throughput/batches_per_sec: 4.1858
+	 Train throughput/samples_per_sec: 66.9729
+	 Train throughput/device/batches_per_sec: 1.0465
+	 Train throughput/device/samples_per_sec: 16.7432
+	 Train throughput/tokens_per_sec: 17145.0539
+	 Train throughput/device/tokens_per_sec: 4286.2635
+	 Train time/train: 0.0577
+	 Train time/val: 0.0005
+	 Train time/total: 0.0582
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=3][batch=276/382]:
+	 Train time/batch: 1039
+	 Train time/sample: 16600
+	 Train time/batch_in_epoch: 275
+	 Train time/sample_in_epoch: 4400
+	 Train time/token: 4249600
+	 Train time/token_in_epoch: 1126400
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.1238
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8704
+	 Train metrics/train/BinaryF1Score: 0.9091
+	 Train throughput/batches_per_sec: 4.1880
+	 Train throughput/samples_per_sec: 67.0078
+	 Train throughput/device/batches_per_sec: 1.0470
+	 Train throughput/device/samples_per_sec: 16.7519
+	 Train throughput/tokens_per_sec: 17153.9890
+	 Train throughput/device/tokens_per_sec: 4288.4973
+	 Train time/train: 0.0582
+	 Train time/val: 0.0005
+	 Train time/total: 0.0587
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=3][batch=286/382]:
+	 Train time/batch: 1049
+	 Train time/sample: 16760
+	 Train time/batch_in_epoch: 285
+	 Train time/sample_in_epoch: 4560
+	 Train time/token: 4290560
+	 Train time/token_in_epoch: 1167360
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0230
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 4.1906
+	 Train throughput/samples_per_sec: 67.0491
+	 Train throughput/device/batches_per_sec: 1.0476
+	 Train throughput/device/samples_per_sec: 16.7623
+	 Train throughput/tokens_per_sec: 17164.5619
+	 Train throughput/device/tokens_per_sec: 4291.1405
+	 Train time/train: 0.0588
+	 Train time/val: 0.0005
+	 Train time/total: 0.0593
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=3][batch=296/382]:
+	 Train time/batch: 1059
+	 Train time/sample: 16920
+	 Train time/batch_in_epoch: 295
+	 Train time/sample_in_epoch: 4720
+	 Train time/token: 4331520
+	 Train time/token_in_epoch: 1208320
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.1690
+	 Train metrics/train/MulticlassAccuracy: 0.8750
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.7746
+	 Train metrics/train/BinaryF1Score: 0.8889
+	 Train throughput/batches_per_sec: 5.0691
+	 Train throughput/samples_per_sec: 81.1063
+	 Train throughput/device/batches_per_sec: 1.2673
+	 Train throughput/device/samples_per_sec: 20.2766
+	 Train throughput/tokens_per_sec: 20763.2186
+	 Train throughput/device/tokens_per_sec: 5190.8047
+	 Train time/train: 0.0593
+	 Train time/val: 0.0005
+	 Train time/total: 0.0598
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=3][batch=306/382]:
+	 Train time/batch: 1069
+	 Train time/sample: 17080
+	 Train time/batch_in_epoch: 305
+	 Train time/sample_in_epoch: 4880
+	 Train time/token: 4372480
+	 Train time/token_in_epoch: 1249280
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0362
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0600
+	 Train throughput/samples_per_sec: 80.9607
+	 Train throughput/device/batches_per_sec: 1.2650
+	 Train throughput/device/samples_per_sec: 20.2402
+	 Train throughput/tokens_per_sec: 20725.9486
+	 Train throughput/device/tokens_per_sec: 5181.4872
+	 Train time/train: 0.0599
+	 Train time/val: 0.0005
+	 Train time/total: 0.0604
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=3][batch=316/382]:
+	 Train time/batch: 1079
+	 Train time/sample: 17240
+	 Train time/batch_in_epoch: 315
+	 Train time/sample_in_epoch: 5040
+	 Train time/token: 4413440
+	 Train time/token_in_epoch: 1290240
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0847
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8704
+	 Train metrics/train/BinaryF1Score: 0.9091
+	 Train throughput/batches_per_sec: 5.0591
+	 Train throughput/samples_per_sec: 80.9453
+	 Train throughput/device/batches_per_sec: 1.2648
+	 Train throughput/device/samples_per_sec: 20.2363
+	 Train throughput/tokens_per_sec: 20721.9935
+	 Train throughput/device/tokens_per_sec: 5180.4984
+	 Train time/train: 0.0604
+	 Train time/val: 0.0005
+	 Train time/total: 0.0609
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=3][batch=326/382]:
+	 Train time/batch: 1089
+	 Train time/sample: 17400
+	 Train time/batch_in_epoch: 325
+	 Train time/sample_in_epoch: 5200
+	 Train time/token: 4454400
+	 Train time/token_in_epoch: 1331200
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.5244
+	 Train metrics/train/MulticlassAccuracy: 0.7500
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.5946
+	 Train metrics/train/BinaryF1Score: 0.7778
+	 Train throughput/batches_per_sec: 5.0520
+	 Train throughput/samples_per_sec: 80.8315
+	 Train throughput/device/batches_per_sec: 1.2630
+	 Train throughput/device/samples_per_sec: 20.2079
+	 Train throughput/tokens_per_sec: 20692.8759
+	 Train throughput/device/tokens_per_sec: 5173.2190
+	 Train time/train: 0.0610
+	 Train time/val: 0.0005
+	 Train time/total: 0.0615
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=3][batch=336/382]:
+	 Train time/batch: 1099
+	 Train time/sample: 17560
+	 Train time/batch_in_epoch: 335
+	 Train time/sample_in_epoch: 5360
+	 Train time/token: 4495360
+	 Train time/token_in_epoch: 1372160
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.2608
+	 Train metrics/train/MulticlassAccuracy: 0.8750
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.7500
+	 Train metrics/train/BinaryF1Score: 0.8750
+	 Train throughput/batches_per_sec: 5.0469
+	 Train throughput/samples_per_sec: 80.7511
+	 Train throughput/device/batches_per_sec: 1.2617
+	 Train throughput/device/samples_per_sec: 20.1878
+	 Train throughput/tokens_per_sec: 20672.2937
+	 Train throughput/device/tokens_per_sec: 5168.0734
+	 Train time/train: 0.0615
+	 Train time/val: 0.0005
+	 Train time/total: 0.0620
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=3][batch=346/382]:
+	 Train time/batch: 1109
+	 Train time/sample: 17720
+	 Train time/batch_in_epoch: 345
+	 Train time/sample_in_epoch: 5520
+	 Train time/token: 4536320
+	 Train time/token_in_epoch: 1413120
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0199
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0534
+	 Train throughput/samples_per_sec: 80.8546
+	 Train throughput/device/batches_per_sec: 1.2634
+	 Train throughput/device/samples_per_sec: 20.2136
+	 Train throughput/tokens_per_sec: 20698.7715
+	 Train throughput/device/tokens_per_sec: 5174.6929
+	 Train time/train: 0.0621
+	 Train time/val: 0.0005
+	 Train time/total: 0.0626
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=3][batch=356/382]:
+	 Train time/batch: 1119
+	 Train time/sample: 17880
+	 Train time/batch_in_epoch: 355
+	 Train time/sample_in_epoch: 5680
+	 Train time/token: 4577280
+	 Train time/token_in_epoch: 1454080
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0351
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0571
+	 Train throughput/samples_per_sec: 80.9132
+	 Train throughput/device/batches_per_sec: 1.2643
+	 Train throughput/device/samples_per_sec: 20.2283
+	 Train throughput/tokens_per_sec: 20713.7715
+	 Train throughput/device/tokens_per_sec: 5178.4429
+	 Train time/train: 0.0626
+	 Train time/val: 0.0005
+	 Train time/total: 0.0631
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=3][batch=366/382]:
+	 Train time/batch: 1129
+	 Train time/sample: 18040
+	 Train time/batch_in_epoch: 365
+	 Train time/sample_in_epoch: 5840
+	 Train time/token: 4618240
+	 Train time/token_in_epoch: 1495040
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0634
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0597
+	 Train throughput/samples_per_sec: 80.9552
+	 Train throughput/device/batches_per_sec: 1.2649
+	 Train throughput/device/samples_per_sec: 20.2388
+	 Train throughput/tokens_per_sec: 20724.5287
+	 Train throughput/device/tokens_per_sec: 5181.1322
+	 Train time/train: 0.0632
+	 Train time/val: 0.0005
+	 Train time/total: 0.0637
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=3][batch=376/382]:
+	 Train time/batch: 1139
+	 Train time/sample: 18200
+	 Train time/batch_in_epoch: 375
+	 Train time/sample_in_epoch: 6000
+	 Train time/token: 4659200
+	 Train time/token_in_epoch: 1536000
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0324
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0779
+	 Train throughput/samples_per_sec: 81.2469
+	 Train throughput/device/batches_per_sec: 1.2695
+	 Train throughput/device/samples_per_sec: 20.3117
+	 Train throughput/tokens_per_sec: 20799.2096
+	 Train throughput/device/tokens_per_sec: 5199.8024
+	 Train time/train: 0.0637
+	 Train time/val: 0.0005
+	 Train time/total: 0.0642
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=4][batch=4/382]:
+	 Train time/batch: 1149
+	 Train time/sample: 18348
+	 Train time/batch_in_epoch: 3
+	 Train time/sample_in_epoch: 48
+	 Train time/token: 4697088
+	 Train time/token_in_epoch: 12288
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0123
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0670
+	 Train throughput/samples_per_sec: 79.8561
+	 Train throughput/device/batches_per_sec: 1.2668
+	 Train throughput/device/samples_per_sec: 19.9640
+	 Train throughput/tokens_per_sec: 20443.1525
+	 Train throughput/device/tokens_per_sec: 5110.7881
+	 Train time/train: 0.0643
+	 Train time/val: 0.0005
+	 Train time/total: 0.0648
+	 Train lr-DecoupledAdamW/group0: 0.0000
+	 Train time/epoch: 3
+[epoch=4][batch=14/382]:
+	 Train time/batch: 1159
+	 Train time/sample: 18508
+	 Train time/batch_in_epoch: 13
+	 Train time/sample_in_epoch: 208
+	 Train time/token: 4738048
+	 Train time/token_in_epoch: 53248
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0271
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0616
+	 Train throughput/samples_per_sec: 79.7712
+	 Train throughput/device/batches_per_sec: 1.2654
+	 Train throughput/device/samples_per_sec: 19.9428
+	 Train throughput/tokens_per_sec: 20421.4351
+	 Train throughput/device/tokens_per_sec: 5105.3588
+	 Train time/train: 0.0648
+	 Train time/val: 0.0005
+	 Train time/total: 0.0653
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=4][batch=24/382]:
+	 Train time/batch: 1169
+	 Train time/sample: 18668
+	 Train time/batch_in_epoch: 23
+	 Train time/sample_in_epoch: 368
+	 Train time/token: 4779008
+	 Train time/token_in_epoch: 94208
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0113
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0598
+	 Train throughput/samples_per_sec: 79.7431
+	 Train throughput/device/batches_per_sec: 1.2650
+	 Train throughput/device/samples_per_sec: 19.9358
+	 Train throughput/tokens_per_sec: 20414.2330
+	 Train throughput/device/tokens_per_sec: 5103.5583
+	 Train time/train: 0.0654
+	 Train time/val: 0.0005
+	 Train time/total: 0.0659
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=4][batch=34/382]:
+	 Train time/batch: 1179
+	 Train time/sample: 18828
+	 Train time/batch_in_epoch: 33
+	 Train time/sample_in_epoch: 528
+	 Train time/token: 4819968
+	 Train time/token_in_epoch: 135168
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0233
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0593
+	 Train throughput/samples_per_sec: 79.7349
+	 Train throughput/device/batches_per_sec: 1.2648
+	 Train throughput/device/samples_per_sec: 19.9337
+	 Train throughput/tokens_per_sec: 20412.1219
+	 Train throughput/device/tokens_per_sec: 5103.0305
+	 Train time/train: 0.0659
+	 Train time/val: 0.0005
+	 Train time/total: 0.0664
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=4][batch=44/382]:
+	 Train time/batch: 1189
+	 Train time/sample: 18988
+	 Train time/batch_in_epoch: 43
+	 Train time/sample_in_epoch: 688
+	 Train time/token: 4860928
+	 Train time/token_in_epoch: 176128
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0099
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0478
+	 Train throughput/samples_per_sec: 79.5539
+	 Train throughput/device/batches_per_sec: 1.2620
+	 Train throughput/device/samples_per_sec: 19.8885
+	 Train throughput/tokens_per_sec: 20365.7985
+	 Train throughput/device/tokens_per_sec: 5091.4496
+	 Train time/train: 0.0665
+	 Train time/val: 0.0005
+	 Train time/total: 0.0670
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=4][batch=54/382]:
+	 Train time/batch: 1199
+	 Train time/sample: 19148
+	 Train time/batch_in_epoch: 53
+	 Train time/sample_in_epoch: 848
+	 Train time/token: 4901888
+	 Train time/token_in_epoch: 217088
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0119
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0604
+	 Train throughput/samples_per_sec: 80.9671
+	 Train throughput/device/batches_per_sec: 1.2651
+	 Train throughput/device/samples_per_sec: 20.2418
+	 Train throughput/tokens_per_sec: 20727.5701
+	 Train throughput/device/tokens_per_sec: 5181.8925
+	 Train time/train: 0.0670
+	 Train time/val: 0.0005
+	 Train time/total: 0.0675
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[Eval batch=1/20] Eval on eval data
+[Eval batch=3/20] Eval on eval data
+[Eval batch=5/20] Eval on eval data
+[Eval batch=7/20] Eval on eval data
+[Eval batch=9/20] Eval on eval data
+[Eval batch=10/20] Eval on eval data
+[Eval batch=12/20] Eval on eval data
+[Eval batch=14/20] Eval on eval data
+[Eval batch=16/20] Eval on eval data
+[Eval batch=18/20] Eval on eval data
+[Eval batch=20/20] Eval on eval data:
+	 Eval metrics/eval/MulticlassAccuracy: 0.9937
+	 Eval metrics/eval/MulticlassMatthewsCorrCoef: 0.9871
+	 Eval metrics/eval/BinaryF1Score: 0.9924
+[epoch=4][batch=64/382]:
+	 Train time/batch: 1209
+	 Train time/sample: 19308
+	 Train time/batch_in_epoch: 63
+	 Train time/sample_in_epoch: 1008
+	 Train time/token: 4942848
+	 Train time/token_in_epoch: 258048
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0110
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0609
+	 Train throughput/samples_per_sec: 80.9744
+	 Train throughput/device/batches_per_sec: 1.2652
+	 Train throughput/device/samples_per_sec: 20.2436
+	 Train throughput/tokens_per_sec: 20729.4352
+	 Train throughput/device/tokens_per_sec: 5182.3588
+	 Train time/train: 0.0676
+	 Train time/val: 0.0006
+	 Train time/total: 0.0681
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=4][batch=74/382]:
+	 Train time/batch: 1219
+	 Train time/sample: 19468
+	 Train time/batch_in_epoch: 73
+	 Train time/sample_in_epoch: 1168
+	 Train time/token: 4983808
+	 Train time/token_in_epoch: 299008
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0076
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0640
+	 Train throughput/samples_per_sec: 81.0235
+	 Train throughput/device/batches_per_sec: 1.2660
+	 Train throughput/device/samples_per_sec: 20.2559
+	 Train throughput/tokens_per_sec: 20742.0089
+	 Train throughput/device/tokens_per_sec: 5185.5022
+	 Train time/train: 0.0681
+	 Train time/val: 0.0006
+	 Train time/total: 0.0687
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=4][batch=84/382]:
+	 Train time/batch: 1229
+	 Train time/sample: 19628
+	 Train time/batch_in_epoch: 83
+	 Train time/sample_in_epoch: 1328
+	 Train time/token: 5024768
+	 Train time/token_in_epoch: 339968
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0266
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0642
+	 Train throughput/samples_per_sec: 81.0270
+	 Train throughput/device/batches_per_sec: 1.2660
+	 Train throughput/device/samples_per_sec: 20.2567
+	 Train throughput/tokens_per_sec: 20742.8997
+	 Train throughput/device/tokens_per_sec: 5185.7249
+	 Train time/train: 0.0687
+	 Train time/val: 0.0006
+	 Train time/total: 0.0692
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=4][batch=94/382]:
+	 Train time/batch: 1239
+	 Train time/sample: 19788
+	 Train time/batch_in_epoch: 93
+	 Train time/sample_in_epoch: 1488
+	 Train time/token: 5065728
+	 Train time/token_in_epoch: 380928
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0080
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0610
+	 Train throughput/samples_per_sec: 80.9753
+	 Train throughput/device/batches_per_sec: 1.2652
+	 Train throughput/device/samples_per_sec: 20.2438
+	 Train throughput/tokens_per_sec: 20729.6807
+	 Train throughput/device/tokens_per_sec: 5182.4202
+	 Train time/train: 0.0692
+	 Train time/val: 0.0006
+	 Train time/total: 0.0698
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=4][batch=104/382]:
+	 Train time/batch: 1249
+	 Train time/sample: 19948
+	 Train time/batch_in_epoch: 103
+	 Train time/sample_in_epoch: 1648
+	 Train time/token: 5106688
+	 Train time/token_in_epoch: 421888
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0078
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0568
+	 Train throughput/samples_per_sec: 80.9095
+	 Train throughput/device/batches_per_sec: 1.2642
+	 Train throughput/device/samples_per_sec: 20.2274
+	 Train throughput/tokens_per_sec: 20712.8434
+	 Train throughput/device/tokens_per_sec: 5178.2109
+	 Train time/train: 0.0698
+	 Train time/val: 0.0006
+	 Train time/total: 0.0703
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=4][batch=114/382]:
+	 Train time/batch: 1259
+	 Train time/sample: 20108
+	 Train time/batch_in_epoch: 113
+	 Train time/sample_in_epoch: 1808
+	 Train time/token: 5147648
+	 Train time/token_in_epoch: 462848
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0486
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0498
+	 Train throughput/samples_per_sec: 80.7968
+	 Train throughput/device/batches_per_sec: 1.2625
+	 Train throughput/device/samples_per_sec: 20.1992
+	 Train throughput/tokens_per_sec: 20683.9834
+	 Train throughput/device/tokens_per_sec: 5170.9958
+	 Train time/train: 0.0703
+	 Train time/val: 0.0006
+	 Train time/total: 0.0709
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=4][batch=124/382]:
+	 Train time/batch: 1269
+	 Train time/sample: 20268
+	 Train time/batch_in_epoch: 123
+	 Train time/sample_in_epoch: 1968
+	 Train time/token: 5188608
+	 Train time/token_in_epoch: 503808
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.1368
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8819
+	 Train metrics/train/BinaryF1Score: 0.9333
+	 Train throughput/batches_per_sec: 5.0448
+	 Train throughput/samples_per_sec: 80.7161
+	 Train throughput/device/batches_per_sec: 1.2612
+	 Train throughput/device/samples_per_sec: 20.1790
+	 Train throughput/tokens_per_sec: 20663.3146
+	 Train throughput/device/tokens_per_sec: 5165.8286
+	 Train time/train: 0.0709
+	 Train time/val: 0.0006
+	 Train time/total: 0.0714
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=4][batch=134/382]:
+	 Train time/batch: 1279
+	 Train time/sample: 20428
+	 Train time/batch_in_epoch: 133
+	 Train time/sample_in_epoch: 2128
+	 Train time/token: 5229568
+	 Train time/token_in_epoch: 544768
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.1128
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8783
+	 Train metrics/train/BinaryF1Score: 0.9474
+	 Train throughput/batches_per_sec: 5.0411
+	 Train throughput/samples_per_sec: 80.6583
+	 Train throughput/device/batches_per_sec: 1.2603
+	 Train throughput/device/samples_per_sec: 20.1646
+	 Train throughput/tokens_per_sec: 20648.5271
+	 Train throughput/device/tokens_per_sec: 5162.1318
+	 Train time/train: 0.0714
+	 Train time/val: 0.0006
+	 Train time/total: 0.0720
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=4][batch=144/382]:
+	 Train time/batch: 1289
+	 Train time/sample: 20588
+	 Train time/batch_in_epoch: 143
+	 Train time/sample_in_epoch: 2288
+	 Train time/token: 5270528
+	 Train time/token_in_epoch: 585728
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0111
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0394
+	 Train throughput/samples_per_sec: 80.6312
+	 Train throughput/device/batches_per_sec: 1.2599
+	 Train throughput/device/samples_per_sec: 20.1578
+	 Train throughput/tokens_per_sec: 20641.5865
+	 Train throughput/device/tokens_per_sec: 5160.3966
+	 Train time/train: 0.0720
+	 Train time/val: 0.0006
+	 Train time/total: 0.0725
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=4][batch=154/382]:
+	 Train time/batch: 1299
+	 Train time/sample: 20748
+	 Train time/batch_in_epoch: 153
+	 Train time/sample_in_epoch: 2448
+	 Train time/token: 5311488
+	 Train time/token_in_epoch: 626688
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0067
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0395
+	 Train throughput/samples_per_sec: 80.6312
+	 Train throughput/device/batches_per_sec: 1.2599
+	 Train throughput/device/samples_per_sec: 20.1578
+	 Train throughput/tokens_per_sec: 20641.5885
+	 Train throughput/device/tokens_per_sec: 5160.3971
+	 Train time/train: 0.0725
+	 Train time/val: 0.0006
+	 Train time/total: 0.0731
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=4][batch=164/382]:
+	 Train time/batch: 1309
+	 Train time/sample: 20908
+	 Train time/batch_in_epoch: 163
+	 Train time/sample_in_epoch: 2608
+	 Train time/token: 5352448
+	 Train time/token_in_epoch: 667648
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0039
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0437
+	 Train throughput/samples_per_sec: 80.6985
+	 Train throughput/device/batches_per_sec: 1.2609
+	 Train throughput/device/samples_per_sec: 20.1746
+	 Train throughput/tokens_per_sec: 20658.8165
+	 Train throughput/device/tokens_per_sec: 5164.7041
+	 Train time/train: 0.0731
+	 Train time/val: 0.0006
+	 Train time/total: 0.0736
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=4][batch=174/382]:
+	 Train time/batch: 1319
+	 Train time/sample: 21068
+	 Train time/batch_in_epoch: 173
+	 Train time/sample_in_epoch: 2768
+	 Train time/token: 5393408
+	 Train time/token_in_epoch: 708608
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0339
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0436
+	 Train throughput/samples_per_sec: 80.6982
+	 Train throughput/device/batches_per_sec: 1.2609
+	 Train throughput/device/samples_per_sec: 20.1745
+	 Train throughput/tokens_per_sec: 20658.7352
+	 Train throughput/device/tokens_per_sec: 5164.6838
+	 Train time/train: 0.0736
+	 Train time/val: 0.0006
+	 Train time/total: 0.0742
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=4][batch=184/382]:
+	 Train time/batch: 1329
+	 Train time/sample: 21228
+	 Train time/batch_in_epoch: 183
+	 Train time/sample_in_epoch: 2928
+	 Train time/token: 5434368
+	 Train time/token_in_epoch: 749568
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0055
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0431
+	 Train throughput/samples_per_sec: 80.6892
+	 Train throughput/device/batches_per_sec: 1.2608
+	 Train throughput/device/samples_per_sec: 20.1723
+	 Train throughput/tokens_per_sec: 20656.4328
+	 Train throughput/device/tokens_per_sec: 5164.1082
+	 Train time/train: 0.0742
+	 Train time/val: 0.0006
+	 Train time/total: 0.0748
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=4][batch=194/382]:
+	 Train time/batch: 1339
+	 Train time/sample: 21388
+	 Train time/batch_in_epoch: 193
+	 Train time/sample_in_epoch: 3088
+	 Train time/token: 5475328
+	 Train time/token_in_epoch: 790528
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0082
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0453
+	 Train throughput/samples_per_sec: 80.7253
+	 Train throughput/device/batches_per_sec: 1.2613
+	 Train throughput/device/samples_per_sec: 20.1813
+	 Train throughput/tokens_per_sec: 20665.6770
+	 Train throughput/device/tokens_per_sec: 5166.4192
+	 Train time/train: 0.0747
+	 Train time/val: 0.0006
+	 Train time/total: 0.0753
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=4][batch=204/382]:
+	 Train time/batch: 1349
+	 Train time/sample: 21548
+	 Train time/batch_in_epoch: 203
+	 Train time/sample_in_epoch: 3248
+	 Train time/token: 5516288
+	 Train time/token_in_epoch: 831488
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.1118
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8819
+	 Train metrics/train/BinaryF1Score: 0.9412
+	 Train throughput/batches_per_sec: 5.0516
+	 Train throughput/samples_per_sec: 80.8259
+	 Train throughput/device/batches_per_sec: 1.2629
+	 Train throughput/device/samples_per_sec: 20.2065
+	 Train throughput/tokens_per_sec: 20691.4313
+	 Train throughput/device/tokens_per_sec: 5172.8578
+	 Train time/train: 0.0753
+	 Train time/val: 0.0006
+	 Train time/total: 0.0758
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=4][batch=214/382]:
+	 Train time/batch: 1359
+	 Train time/sample: 21708
+	 Train time/batch_in_epoch: 213
+	 Train time/sample_in_epoch: 3408
+	 Train time/token: 5557248
+	 Train time/token_in_epoch: 872448
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.1162
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8783
+	 Train metrics/train/BinaryF1Score: 0.9231
+	 Train throughput/batches_per_sec: 5.0504
+	 Train throughput/samples_per_sec: 80.8070
+	 Train throughput/device/batches_per_sec: 1.2626
+	 Train throughput/device/samples_per_sec: 20.2018
+	 Train throughput/tokens_per_sec: 20686.6033
+	 Train throughput/device/tokens_per_sec: 5171.6508
+	 Train time/train: 0.0758
+	 Train time/val: 0.0006
+	 Train time/total: 0.0764
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=4][batch=224/382]:
+	 Train time/batch: 1369
+	 Train time/sample: 21868
+	 Train time/batch_in_epoch: 223
+	 Train time/sample_in_epoch: 3568
+	 Train time/token: 5598208
+	 Train time/token_in_epoch: 913408
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.3381
+	 Train metrics/train/MulticlassAccuracy: 0.8750
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.7460
+	 Train metrics/train/BinaryF1Score: 0.8571
+	 Train throughput/batches_per_sec: 5.0551
+	 Train throughput/samples_per_sec: 80.8818
+	 Train throughput/device/batches_per_sec: 1.2638
+	 Train throughput/device/samples_per_sec: 20.2204
+	 Train throughput/tokens_per_sec: 20705.7381
+	 Train throughput/device/tokens_per_sec: 5176.4345
+	 Train time/train: 0.0764
+	 Train time/val: 0.0006
+	 Train time/total: 0.0769
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=4][batch=234/382]:
+	 Train time/batch: 1379
+	 Train time/sample: 22028
+	 Train time/batch_in_epoch: 233
+	 Train time/sample_in_epoch: 3728
+	 Train time/token: 5639168
+	 Train time/token_in_epoch: 954368
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0136
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0607
+	 Train throughput/samples_per_sec: 80.9712
+	 Train throughput/device/batches_per_sec: 1.2652
+	 Train throughput/device/samples_per_sec: 20.2428
+	 Train throughput/tokens_per_sec: 20728.6274
+	 Train throughput/device/tokens_per_sec: 5182.1569
+	 Train time/train: 0.0769
+	 Train time/val: 0.0006
+	 Train time/total: 0.0775
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=4][batch=244/382]:
+	 Train time/batch: 1389
+	 Train time/sample: 22188
+	 Train time/batch_in_epoch: 243
+	 Train time/sample_in_epoch: 3888
+	 Train time/token: 5680128
+	 Train time/token_in_epoch: 995328
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0319
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0631
+	 Train throughput/samples_per_sec: 81.0088
+	 Train throughput/device/batches_per_sec: 1.2658
+	 Train throughput/device/samples_per_sec: 20.2522
+	 Train throughput/tokens_per_sec: 20738.2535
+	 Train throughput/device/tokens_per_sec: 5184.5634
+	 Train time/train: 0.0775
+	 Train time/val: 0.0006
+	 Train time/total: 0.0780
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=4][batch=254/382]:
+	 Train time/batch: 1399
+	 Train time/sample: 22348
+	 Train time/batch_in_epoch: 253
+	 Train time/sample_in_epoch: 4048
+	 Train time/token: 5721088
+	 Train time/token_in_epoch: 1036288
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0050
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0600
+	 Train throughput/samples_per_sec: 80.9598
+	 Train throughput/device/batches_per_sec: 1.2650
+	 Train throughput/device/samples_per_sec: 20.2400
+	 Train throughput/tokens_per_sec: 20725.7158
+	 Train throughput/device/tokens_per_sec: 5181.4289
+	 Train time/train: 0.0780
+	 Train time/val: 0.0006
+	 Train time/total: 0.0786
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[Eval batch=1/20] Eval on eval data
+[Eval batch=3/20] Eval on eval data
+[Eval batch=5/20] Eval on eval data
+[Eval batch=7/20] Eval on eval data
+[Eval batch=9/20] Eval on eval data
+[Eval batch=10/20] Eval on eval data
+[Eval batch=12/20] Eval on eval data
+[Eval batch=14/20] Eval on eval data
+[Eval batch=16/20] Eval on eval data
+[Eval batch=18/20] Eval on eval data
+[Eval batch=20/20] Eval on eval data:
+	 Eval metrics/eval/MulticlassAccuracy: 0.9937
+	 Eval metrics/eval/MulticlassMatthewsCorrCoef: 0.9871
+	 Eval metrics/eval/BinaryF1Score: 0.9925
+[epoch=4][batch=264/382]:
+	 Train time/batch: 1409
+	 Train time/sample: 22508
+	 Train time/batch_in_epoch: 263
+	 Train time/sample_in_epoch: 4208
+	 Train time/token: 5762048
+	 Train time/token_in_epoch: 1077248
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0022
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0608
+	 Train throughput/samples_per_sec: 80.9734
+	 Train throughput/device/batches_per_sec: 1.2652
+	 Train throughput/device/samples_per_sec: 20.2433
+	 Train throughput/tokens_per_sec: 20729.1855
+	 Train throughput/device/tokens_per_sec: 5182.2964
+	 Train time/train: 0.0786
+	 Train time/val: 0.0007
+	 Train time/total: 0.0792
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=4][batch=274/382]:
+	 Train time/batch: 1419
+	 Train time/sample: 22668
+	 Train time/batch_in_epoch: 273
+	 Train time/sample_in_epoch: 4368
+	 Train time/token: 5803008
+	 Train time/token_in_epoch: 1118208
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0017
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0599
+	 Train throughput/samples_per_sec: 80.9580
+	 Train throughput/device/batches_per_sec: 1.2650
+	 Train throughput/device/samples_per_sec: 20.2395
+	 Train throughput/tokens_per_sec: 20725.2460
+	 Train throughput/device/tokens_per_sec: 5181.3115
+	 Train time/train: 0.0791
+	 Train time/val: 0.0007
+	 Train time/total: 0.0798
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=4][batch=284/382]:
+	 Train time/batch: 1429
+	 Train time/sample: 22828
+	 Train time/batch_in_epoch: 283
+	 Train time/sample_in_epoch: 4528
+	 Train time/token: 5843968
+	 Train time/token_in_epoch: 1159168
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0022
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0597
+	 Train throughput/samples_per_sec: 80.9554
+	 Train throughput/device/batches_per_sec: 1.2649
+	 Train throughput/device/samples_per_sec: 20.2389
+	 Train throughput/tokens_per_sec: 20724.5874
+	 Train throughput/device/tokens_per_sec: 5181.1469
+	 Train time/train: 0.0797
+	 Train time/val: 0.0007
+	 Train time/total: 0.0803
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=4][batch=294/382]:
+	 Train time/batch: 1439
+	 Train time/sample: 22988
+	 Train time/batch_in_epoch: 293
+	 Train time/sample_in_epoch: 4688
+	 Train time/token: 5884928
+	 Train time/token_in_epoch: 1200128
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0025
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0603
+	 Train throughput/samples_per_sec: 80.9652
+	 Train throughput/device/batches_per_sec: 1.2651
+	 Train throughput/device/samples_per_sec: 20.2413
+	 Train throughput/tokens_per_sec: 20727.0939
+	 Train throughput/device/tokens_per_sec: 5181.7735
+	 Train time/train: 0.0802
+	 Train time/val: 0.0007
+	 Train time/total: 0.0809
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=4][batch=304/382]:
+	 Train time/batch: 1449
+	 Train time/sample: 23148
+	 Train time/batch_in_epoch: 303
+	 Train time/sample_in_epoch: 4848
+	 Train time/token: 5925888
+	 Train time/token_in_epoch: 1241088
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0072
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0639
+	 Train throughput/samples_per_sec: 81.0225
+	 Train throughput/device/batches_per_sec: 1.2660
+	 Train throughput/device/samples_per_sec: 20.2556
+	 Train throughput/tokens_per_sec: 20741.7631
+	 Train throughput/device/tokens_per_sec: 5185.4408
+	 Train time/train: 0.0808
+	 Train time/val: 0.0007
+	 Train time/total: 0.0814
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=4][batch=314/382]:
+	 Train time/batch: 1459
+	 Train time/sample: 23308
+	 Train time/batch_in_epoch: 313
+	 Train time/sample_in_epoch: 5008
+	 Train time/token: 5966848
+	 Train time/token_in_epoch: 1282048
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0574
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8783
+	 Train metrics/train/BinaryF1Score: 0.9474
+	 Train throughput/batches_per_sec: 5.0675
+	 Train throughput/samples_per_sec: 81.0801
+	 Train throughput/device/batches_per_sec: 1.2669
+	 Train throughput/device/samples_per_sec: 20.2700
+	 Train throughput/tokens_per_sec: 20756.5078
+	 Train throughput/device/tokens_per_sec: 5189.1270
+	 Train time/train: 0.0813
+	 Train time/val: 0.0007
+	 Train time/total: 0.0820
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=4][batch=324/382]:
+	 Train time/batch: 1469
+	 Train time/sample: 23468
+	 Train time/batch_in_epoch: 323
+	 Train time/sample_in_epoch: 5168
+	 Train time/token: 6007808
+	 Train time/token_in_epoch: 1323008
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.2677
+	 Train metrics/train/MulticlassAccuracy: 0.8750
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.7460
+	 Train metrics/train/BinaryF1Score: 0.8571
+	 Train throughput/batches_per_sec: 5.0651
+	 Train throughput/samples_per_sec: 81.0421
+	 Train throughput/device/batches_per_sec: 1.2663
+	 Train throughput/device/samples_per_sec: 20.2605
+	 Train throughput/tokens_per_sec: 20746.7808
+	 Train throughput/device/tokens_per_sec: 5186.6952
+	 Train time/train: 0.0819
+	 Train time/val: 0.0007
+	 Train time/total: 0.0825
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=4][batch=334/382]:
+	 Train time/batch: 1479
+	 Train time/sample: 23628
+	 Train time/batch_in_epoch: 333
+	 Train time/sample_in_epoch: 5328
+	 Train time/token: 6048768
+	 Train time/token_in_epoch: 1363968
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.4543
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8819
+	 Train metrics/train/BinaryF1Score: 0.9412
+	 Train throughput/batches_per_sec: 5.0650
+	 Train throughput/samples_per_sec: 81.0404
+	 Train throughput/device/batches_per_sec: 1.2663
+	 Train throughput/device/samples_per_sec: 20.2601
+	 Train throughput/tokens_per_sec: 20746.3415
+	 Train throughput/device/tokens_per_sec: 5186.5854
+	 Train time/train: 0.0824
+	 Train time/val: 0.0007
+	 Train time/total: 0.0831
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=4][batch=344/382]:
+	 Train time/batch: 1489
+	 Train time/sample: 23788
+	 Train time/batch_in_epoch: 343
+	 Train time/sample_in_epoch: 5488
+	 Train time/token: 6089728
+	 Train time/token_in_epoch: 1404928
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0311
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0645
+	 Train throughput/samples_per_sec: 81.0321
+	 Train throughput/device/batches_per_sec: 1.2661
+	 Train throughput/device/samples_per_sec: 20.2580
+	 Train throughput/tokens_per_sec: 20744.2191
+	 Train throughput/device/tokens_per_sec: 5186.0548
+	 Train time/train: 0.0830
+	 Train time/val: 0.0007
+	 Train time/total: 0.0836
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=4][batch=354/382]:
+	 Train time/batch: 1499
+	 Train time/sample: 23948
+	 Train time/batch_in_epoch: 353
+	 Train time/sample_in_epoch: 5648
+	 Train time/token: 6130688
+	 Train time/token_in_epoch: 1445888
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0231
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0580
+	 Train throughput/samples_per_sec: 80.9283
+	 Train throughput/device/batches_per_sec: 1.2645
+	 Train throughput/device/samples_per_sec: 20.2321
+	 Train throughput/tokens_per_sec: 20717.6375
+	 Train throughput/device/tokens_per_sec: 5179.4094
+	 Train time/train: 0.0835
+	 Train time/val: 0.0007
+	 Train time/total: 0.0842
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=4][batch=364/382]:
+	 Train time/batch: 1509
+	 Train time/sample: 24108
+	 Train time/batch_in_epoch: 363
+	 Train time/sample_in_epoch: 5808
+	 Train time/token: 6171648
+	 Train time/token_in_epoch: 1486848
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.3230
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8819
+	 Train metrics/train/BinaryF1Score: 0.9333
+	 Train throughput/batches_per_sec: 5.0596
+	 Train throughput/samples_per_sec: 80.9532
+	 Train throughput/device/batches_per_sec: 1.2649
+	 Train throughput/device/samples_per_sec: 20.2383
+	 Train throughput/tokens_per_sec: 20724.0275
+	 Train throughput/device/tokens_per_sec: 5181.0069
+	 Train time/train: 0.0841
+	 Train time/val: 0.0007
+	 Train time/total: 0.0847
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=4][batch=374/382]:
+	 Train time/batch: 1519
+	 Train time/sample: 24268
+	 Train time/batch_in_epoch: 373
+	 Train time/sample_in_epoch: 5968
+	 Train time/token: 6212608
+	 Train time/token_in_epoch: 1527808
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0303
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0701
+	 Train throughput/samples_per_sec: 81.1216
+	 Train throughput/device/batches_per_sec: 1.2675
+	 Train throughput/device/samples_per_sec: 20.2804
+	 Train throughput/tokens_per_sec: 20767.1347
+	 Train throughput/device/tokens_per_sec: 5191.7837
+	 Train time/train: 0.0846
+	 Train time/val: 0.0007
+	 Train time/total: 0.0853
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=5][batch=2/382]:
+	 Train time/batch: 1529
+	 Train time/sample: 24416
+	 Train time/batch_in_epoch: 1
+	 Train time/sample_in_epoch: 16
+	 Train time/token: 6250496
+	 Train time/token_in_epoch: 4096
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.3967
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8321
+	 Train metrics/train/BinaryF1Score: 0.8571
+	 Train throughput/batches_per_sec: 5.0570
+	 Train throughput/samples_per_sec: 79.6978
+	 Train throughput/device/batches_per_sec: 1.2642
+	 Train throughput/device/samples_per_sec: 19.9244
+	 Train throughput/tokens_per_sec: 20402.6336
+	 Train throughput/device/tokens_per_sec: 5100.6584
+	 Train time/train: 0.0852
+	 Train time/val: 0.0007
+	 Train time/total: 0.0858
+	 Train lr-DecoupledAdamW/group0: 0.0000
+	 Train time/epoch: 4
+[epoch=5][batch=12/382]:
+	 Train time/batch: 1539
+	 Train time/sample: 24576
+	 Train time/batch_in_epoch: 11
+	 Train time/sample_in_epoch: 176
+	 Train time/token: 6291456
+	 Train time/token_in_epoch: 45056
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0268
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0559
+	 Train throughput/samples_per_sec: 79.6812
+	 Train throughput/device/batches_per_sec: 1.2640
+	 Train throughput/device/samples_per_sec: 19.9203
+	 Train throughput/tokens_per_sec: 20398.3816
+	 Train throughput/device/tokens_per_sec: 5099.5954
+	 Train time/train: 0.0857
+	 Train time/val: 0.0007
+	 Train time/total: 0.0864
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=5][batch=22/382]:
+	 Train time/batch: 1549
+	 Train time/sample: 24736
+	 Train time/batch_in_epoch: 21
+	 Train time/sample_in_epoch: 336
+	 Train time/token: 6332416
+	 Train time/token_in_epoch: 86016
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0063
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0560
+	 Train throughput/samples_per_sec: 79.6818
+	 Train throughput/device/batches_per_sec: 1.2640
+	 Train throughput/device/samples_per_sec: 19.9204
+	 Train throughput/tokens_per_sec: 20398.5384
+	 Train throughput/device/tokens_per_sec: 5099.6346
+	 Train time/train: 0.0863
+	 Train time/val: 0.0007
+	 Train time/total: 0.0869
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=5][batch=32/382]:
+	 Train time/batch: 1559
+	 Train time/sample: 24896
+	 Train time/batch_in_epoch: 31
+	 Train time/sample_in_epoch: 496
+	 Train time/token: 6373376
+	 Train time/token_in_epoch: 126976
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0042
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0588
+	 Train throughput/samples_per_sec: 79.7267
+	 Train throughput/device/batches_per_sec: 1.2647
+	 Train throughput/device/samples_per_sec: 19.9317
+	 Train throughput/tokens_per_sec: 20410.0443
+	 Train throughput/device/tokens_per_sec: 5102.5111
+	 Train time/train: 0.0868
+	 Train time/val: 0.0007
+	 Train time/total: 0.0875
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=5][batch=42/382]:
+	 Train time/batch: 1569
+	 Train time/sample: 25056
+	 Train time/batch_in_epoch: 41
+	 Train time/sample_in_epoch: 656
+	 Train time/token: 6414336
+	 Train time/token_in_epoch: 167936
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0038
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0534
+	 Train throughput/samples_per_sec: 79.6417
+	 Train throughput/device/batches_per_sec: 1.2634
+	 Train throughput/device/samples_per_sec: 19.9104
+	 Train throughput/tokens_per_sec: 20388.2838
+	 Train throughput/device/tokens_per_sec: 5097.0709
+	 Train time/train: 0.0874
+	 Train time/val: 0.0007
+	 Train time/total: 0.0880
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=5][batch=52/382]:
+	 Train time/batch: 1579
+	 Train time/sample: 25216
+	 Train time/batch_in_epoch: 51
+	 Train time/sample_in_epoch: 816
+	 Train time/token: 6455296
+	 Train time/token_in_epoch: 208896
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0085
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0658
+	 Train throughput/samples_per_sec: 81.0525
+	 Train throughput/device/batches_per_sec: 1.2664
+	 Train throughput/device/samples_per_sec: 20.2631
+	 Train throughput/tokens_per_sec: 20749.4419
+	 Train throughput/device/tokens_per_sec: 5187.3605
+	 Train time/train: 0.0879
+	 Train time/val: 0.0007
+	 Train time/total: 0.0886
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=5][batch=62/382]:
+	 Train time/batch: 1589
+	 Train time/sample: 25376
+	 Train time/batch_in_epoch: 61
+	 Train time/sample_in_epoch: 976
+	 Train time/token: 6496256
+	 Train time/token_in_epoch: 249856
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0089
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0616
+	 Train throughput/samples_per_sec: 80.9854
+	 Train throughput/device/batches_per_sec: 1.2654
+	 Train throughput/device/samples_per_sec: 20.2464
+	 Train throughput/tokens_per_sec: 20732.2661
+	 Train throughput/device/tokens_per_sec: 5183.0665
+	 Train time/train: 0.0885
+	 Train time/val: 0.0007
+	 Train time/total: 0.0891
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=5][batch=72/382]:
+	 Train time/batch: 1599
+	 Train time/sample: 25536
+	 Train time/batch_in_epoch: 71
+	 Train time/sample_in_epoch: 1136
+	 Train time/token: 6537216
+	 Train time/token_in_epoch: 290816
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0822
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8783
+	 Train metrics/train/BinaryF1Score: 0.9231
+	 Train throughput/batches_per_sec: 5.0599
+	 Train throughput/samples_per_sec: 80.9581
+	 Train throughput/device/batches_per_sec: 1.2650
+	 Train throughput/device/samples_per_sec: 20.2395
+	 Train throughput/tokens_per_sec: 20725.2858
+	 Train throughput/device/tokens_per_sec: 5181.3215
+	 Train time/train: 0.0890
+	 Train time/val: 0.0007
+	 Train time/total: 0.0897
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[Eval batch=1/20] Eval on eval data
+[Eval batch=3/20] Eval on eval data
+[Eval batch=5/20] Eval on eval data
+[Eval batch=7/20] Eval on eval data
+[Eval batch=9/20] Eval on eval data
+[Eval batch=10/20] Eval on eval data
+[Eval batch=12/20] Eval on eval data
+[Eval batch=14/20] Eval on eval data
+[Eval batch=16/20] Eval on eval data
+[Eval batch=18/20] Eval on eval data
+[Eval batch=20/20] Eval on eval data:
+	 Eval metrics/eval/MulticlassAccuracy: 0.9969
+	 Eval metrics/eval/MulticlassMatthewsCorrCoef: 0.9936
+	 Eval metrics/eval/BinaryF1Score: 0.9962
+[epoch=5][batch=82/382]:
+	 Train time/batch: 1609
+	 Train time/sample: 25696
+	 Train time/batch_in_epoch: 81
+	 Train time/sample_in_epoch: 1296
+	 Train time/token: 6578176
+	 Train time/token_in_epoch: 331776
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0060
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0497
+	 Train throughput/samples_per_sec: 80.7948
+	 Train throughput/device/batches_per_sec: 1.2624
+	 Train throughput/device/samples_per_sec: 20.1987
+	 Train throughput/tokens_per_sec: 20683.4799
+	 Train throughput/device/tokens_per_sec: 5170.8700
+	 Train time/train: 0.0896
+	 Train time/val: 0.0008
+	 Train time/total: 0.0903
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=5][batch=92/382]:
+	 Train time/batch: 1619
+	 Train time/sample: 25856
+	 Train time/batch_in_epoch: 91
+	 Train time/sample_in_epoch: 1456
+	 Train time/token: 6619136
+	 Train time/token_in_epoch: 372736
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0032
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0435
+	 Train throughput/samples_per_sec: 80.6958
+	 Train throughput/device/batches_per_sec: 1.2609
+	 Train throughput/device/samples_per_sec: 20.1739
+	 Train throughput/tokens_per_sec: 20658.1184
+	 Train throughput/device/tokens_per_sec: 5164.5296
+	 Train time/train: 0.0901
+	 Train time/val: 0.0008
+	 Train time/total: 0.0909
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=5][batch=102/382]:
+	 Train time/batch: 1629
+	 Train time/sample: 26016
+	 Train time/batch_in_epoch: 101
+	 Train time/sample_in_epoch: 1616
+	 Train time/token: 6660096
+	 Train time/token_in_epoch: 413696
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0043
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0438
+	 Train throughput/samples_per_sec: 80.7011
+	 Train throughput/device/batches_per_sec: 1.2610
+	 Train throughput/device/samples_per_sec: 20.1753
+	 Train throughput/tokens_per_sec: 20659.4771
+	 Train throughput/device/tokens_per_sec: 5164.8693
+	 Train time/train: 0.0907
+	 Train time/val: 0.0008
+	 Train time/total: 0.0914
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=5][batch=112/382]:
+	 Train time/batch: 1639
+	 Train time/sample: 26176
+	 Train time/batch_in_epoch: 111
+	 Train time/sample_in_epoch: 1776
+	 Train time/token: 6701056
+	 Train time/token_in_epoch: 454656
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0034
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0501
+	 Train throughput/samples_per_sec: 80.8017
+	 Train throughput/device/batches_per_sec: 1.2625
+	 Train throughput/device/samples_per_sec: 20.2004
+	 Train throughput/tokens_per_sec: 20685.2243
+	 Train throughput/device/tokens_per_sec: 5171.3061
+	 Train time/train: 0.0912
+	 Train time/val: 0.0008
+	 Train time/total: 0.0920
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=5][batch=122/382]:
+	 Train time/batch: 1649
+	 Train time/sample: 26336
+	 Train time/batch_in_epoch: 121
+	 Train time/sample_in_epoch: 1936
+	 Train time/token: 6742016
+	 Train time/token_in_epoch: 495616
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0037
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0580
+	 Train throughput/samples_per_sec: 80.9287
+	 Train throughput/device/batches_per_sec: 1.2645
+	 Train throughput/device/samples_per_sec: 20.2322
+	 Train throughput/tokens_per_sec: 20717.7507
+	 Train throughput/device/tokens_per_sec: 5179.4377
+	 Train time/train: 0.0918
+	 Train time/val: 0.0008
+	 Train time/total: 0.0925
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=5][batch=132/382]:
+	 Train time/batch: 1659
+	 Train time/sample: 26496
+	 Train time/batch_in_epoch: 131
+	 Train time/sample_in_epoch: 2096
+	 Train time/token: 6782976
+	 Train time/token_in_epoch: 536576
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0047
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0678
+	 Train throughput/samples_per_sec: 81.0845
+	 Train throughput/device/batches_per_sec: 1.2669
+	 Train throughput/device/samples_per_sec: 20.2711
+	 Train throughput/tokens_per_sec: 20757.6312
+	 Train throughput/device/tokens_per_sec: 5189.4078
+	 Train time/train: 0.0923
+	 Train time/val: 0.0008
+	 Train time/total: 0.0931
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=5][batch=142/382]:
+	 Train time/batch: 1669
+	 Train time/sample: 26656
+	 Train time/batch_in_epoch: 141
+	 Train time/sample_in_epoch: 2256
+	 Train time/token: 6823936
+	 Train time/token_in_epoch: 577536
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0553
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8783
+	 Train metrics/train/BinaryF1Score: 0.9231
+	 Train throughput/batches_per_sec: 5.0735
+	 Train throughput/samples_per_sec: 81.1765
+	 Train throughput/device/batches_per_sec: 1.2684
+	 Train throughput/device/samples_per_sec: 20.2941
+	 Train throughput/tokens_per_sec: 20781.1817
+	 Train throughput/device/tokens_per_sec: 5195.2954
+	 Train time/train: 0.0928
+	 Train time/val: 0.0008
+	 Train time/total: 0.0936
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=5][batch=152/382]:
+	 Train time/batch: 1679
+	 Train time/sample: 26816
+	 Train time/batch_in_epoch: 151
+	 Train time/sample_in_epoch: 2416
+	 Train time/token: 6864896
+	 Train time/token_in_epoch: 618496
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0399
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0738
+	 Train throughput/samples_per_sec: 81.1800
+	 Train throughput/device/batches_per_sec: 1.2684
+	 Train throughput/device/samples_per_sec: 20.2950
+	 Train throughput/tokens_per_sec: 20782.0863
+	 Train throughput/device/tokens_per_sec: 5195.5216
+	 Train time/train: 0.0934
+	 Train time/val: 0.0008
+	 Train time/total: 0.0942
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=5][batch=162/382]:
+	 Train time/batch: 1689
+	 Train time/sample: 26976
+	 Train time/batch_in_epoch: 161
+	 Train time/sample_in_epoch: 2576
+	 Train time/token: 6905856
+	 Train time/token_in_epoch: 659456
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0057
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0719
+	 Train throughput/samples_per_sec: 81.1511
+	 Train throughput/device/batches_per_sec: 1.2680
+	 Train throughput/device/samples_per_sec: 20.2878
+	 Train throughput/tokens_per_sec: 20774.6700
+	 Train throughput/device/tokens_per_sec: 5193.6675
+	 Train time/train: 0.0939
+	 Train time/val: 0.0008
+	 Train time/total: 0.0947
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=5][batch=172/382]:
+	 Train time/batch: 1699
+	 Train time/sample: 27136
+	 Train time/batch_in_epoch: 171
+	 Train time/sample_in_epoch: 2736
+	 Train time/token: 6946816
+	 Train time/token_in_epoch: 700416
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0187
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0658
+	 Train throughput/samples_per_sec: 81.0534
+	 Train throughput/device/batches_per_sec: 1.2665
+	 Train throughput/device/samples_per_sec: 20.2634
+	 Train throughput/tokens_per_sec: 20749.6710
+	 Train throughput/device/tokens_per_sec: 5187.4178
+	 Train time/train: 0.0945
+	 Train time/val: 0.0008
+	 Train time/total: 0.0953
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=5][batch=182/382]:
+	 Train time/batch: 1709
+	 Train time/sample: 27296
+	 Train time/batch_in_epoch: 181
+	 Train time/sample_in_epoch: 2896
+	 Train time/token: 6987776
+	 Train time/token_in_epoch: 741376
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0053
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0587
+	 Train throughput/samples_per_sec: 80.9393
+	 Train throughput/device/batches_per_sec: 1.2647
+	 Train throughput/device/samples_per_sec: 20.2348
+	 Train throughput/tokens_per_sec: 20720.4651
+	 Train throughput/device/tokens_per_sec: 5180.1163
+	 Train time/train: 0.0950
+	 Train time/val: 0.0008
+	 Train time/total: 0.0958
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=5][batch=192/382]:
+	 Train time/batch: 1719
+	 Train time/sample: 27456
+	 Train time/batch_in_epoch: 191
+	 Train time/sample_in_epoch: 3056
+	 Train time/token: 7028736
+	 Train time/token_in_epoch: 782336
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0069
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0571
+	 Train throughput/samples_per_sec: 80.9135
+	 Train throughput/device/batches_per_sec: 1.2643
+	 Train throughput/device/samples_per_sec: 20.2284
+	 Train throughput/tokens_per_sec: 20713.8616
+	 Train throughput/device/tokens_per_sec: 5178.4654
+	 Train time/train: 0.0956
+	 Train time/val: 0.0008
+	 Train time/total: 0.0964
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=5][batch=202/382]:
+	 Train time/batch: 1729
+	 Train time/sample: 27616
+	 Train time/batch_in_epoch: 201
+	 Train time/sample_in_epoch: 3216
+	 Train time/token: 7069696
+	 Train time/token_in_epoch: 823296
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0864
+	 Train metrics/train/MulticlassAccuracy: 0.9375
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 0.8563
+	 Train metrics/train/BinaryF1Score: 0.8889
+	 Train throughput/batches_per_sec: 5.0569
+	 Train throughput/samples_per_sec: 80.9110
+	 Train throughput/device/batches_per_sec: 1.2642
+	 Train throughput/device/samples_per_sec: 20.2277
+	 Train throughput/tokens_per_sec: 20713.2142
+	 Train throughput/device/tokens_per_sec: 5178.3036
+	 Train time/train: 0.0961
+	 Train time/val: 0.0008
+	 Train time/total: 0.0969
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=5][batch=212/382]:
+	 Train time/batch: 1739
+	 Train time/sample: 27776
+	 Train time/batch_in_epoch: 211
+	 Train time/sample_in_epoch: 3376
+	 Train time/token: 7110656
+	 Train time/token_in_epoch: 864256
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0047
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0577
+	 Train throughput/samples_per_sec: 80.9240
+	 Train throughput/device/batches_per_sec: 1.2644
+	 Train throughput/device/samples_per_sec: 20.2310
+	 Train throughput/tokens_per_sec: 20716.5331
+	 Train throughput/device/tokens_per_sec: 5179.1333
+	 Train time/train: 0.0967
+	 Train time/val: 0.0008
+	 Train time/total: 0.0975
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=5][batch=222/382]:
+	 Train time/batch: 1749
+	 Train time/sample: 27936
+	 Train time/batch_in_epoch: 221
+	 Train time/sample_in_epoch: 3536
+	 Train time/token: 7151616
+	 Train time/token_in_epoch: 905216
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0038
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0647
+	 Train throughput/samples_per_sec: 81.0345
+	 Train throughput/device/batches_per_sec: 1.2662
+	 Train throughput/device/samples_per_sec: 20.2586
+	 Train throughput/tokens_per_sec: 20744.8285
+	 Train throughput/device/tokens_per_sec: 5186.2071
+	 Train time/train: 0.0972
+	 Train time/val: 0.0008
+	 Train time/total: 0.0980
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=5][batch=232/382]:
+	 Train time/batch: 1759
+	 Train time/sample: 28096
+	 Train time/batch_in_epoch: 231
+	 Train time/sample_in_epoch: 3696
+	 Train time/token: 7192576
+	 Train time/token_in_epoch: 946176
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0046
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0674
+	 Train throughput/samples_per_sec: 81.0787
+	 Train throughput/device/batches_per_sec: 1.2669
+	 Train throughput/device/samples_per_sec: 20.2697
+	 Train throughput/tokens_per_sec: 20756.1397
+	 Train throughput/device/tokens_per_sec: 5189.0349
+	 Train time/train: 0.0978
+	 Train time/val: 0.0008
+	 Train time/total: 0.0985
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=5][batch=242/382]:
+	 Train time/batch: 1769
+	 Train time/sample: 28256
+	 Train time/batch_in_epoch: 241
+	 Train time/sample_in_epoch: 3856
+	 Train time/token: 7233536
+	 Train time/token_in_epoch: 987136
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0137
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0698
+	 Train throughput/samples_per_sec: 81.1167
+	 Train throughput/device/batches_per_sec: 1.2674
+	 Train throughput/device/samples_per_sec: 20.2792
+	 Train throughput/tokens_per_sec: 20765.8650
+	 Train throughput/device/tokens_per_sec: 5191.4662
+	 Train time/train: 0.0983
+	 Train time/val: 0.0008
+	 Train time/total: 0.0991
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=5][batch=252/382]:
+	 Train time/batch: 1779
+	 Train time/sample: 28416
+	 Train time/batch_in_epoch: 251
+	 Train time/sample_in_epoch: 4016
+	 Train time/token: 7274496
+	 Train time/token_in_epoch: 1028096
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0087
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0687
+	 Train throughput/samples_per_sec: 81.0984
+	 Train throughput/device/batches_per_sec: 1.2672
+	 Train throughput/device/samples_per_sec: 20.2746
+	 Train throughput/tokens_per_sec: 20761.1917
+	 Train throughput/device/tokens_per_sec: 5190.2979
+	 Train time/train: 0.0989
+	 Train time/val: 0.0008
+	 Train time/total: 0.0996
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=5][batch=262/382]:
+	 Train time/batch: 1789
+	 Train time/sample: 28576
+	 Train time/batch_in_epoch: 261
+	 Train time/sample_in_epoch: 4176
+	 Train time/token: 7315456
+	 Train time/token_in_epoch: 1069056
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0031
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0713
+	 Train throughput/samples_per_sec: 81.1401
+	 Train throughput/device/batches_per_sec: 1.2678
+	 Train throughput/device/samples_per_sec: 20.2850
+	 Train throughput/tokens_per_sec: 20771.8549
+	 Train throughput/device/tokens_per_sec: 5192.9637
+	 Train time/train: 0.0994
+	 Train time/val: 0.0008
+	 Train time/total: 0.1002
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=5][batch=272/382]:
+	 Train time/batch: 1799
+	 Train time/sample: 28736
+	 Train time/batch_in_epoch: 271
+	 Train time/sample_in_epoch: 4336
+	 Train time/token: 7356416
+	 Train time/token_in_epoch: 1110016
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0024
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0686
+	 Train throughput/samples_per_sec: 81.0980
+	 Train throughput/device/batches_per_sec: 1.2672
+	 Train throughput/device/samples_per_sec: 20.2745
+	 Train throughput/tokens_per_sec: 20761.0864
+	 Train throughput/device/tokens_per_sec: 5190.2716
+	 Train time/train: 0.1000
+	 Train time/val: 0.0008
+	 Train time/total: 0.1007
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[Eval batch=1/20] Eval on eval data
+[Eval batch=3/20] Eval on eval data
+[Eval batch=5/20] Eval on eval data
+[Eval batch=7/20] Eval on eval data
+[Eval batch=9/20] Eval on eval data
+[Eval batch=10/20] Eval on eval data
+[Eval batch=12/20] Eval on eval data
+[Eval batch=14/20] Eval on eval data
+[Eval batch=16/20] Eval on eval data
+[Eval batch=18/20] Eval on eval data
+[Eval batch=20/20] Eval on eval data:
+	 Eval metrics/eval/MulticlassAccuracy: 0.9969
+	 Eval metrics/eval/MulticlassMatthewsCorrCoef: 0.9936
+	 Eval metrics/eval/BinaryF1Score: 0.9962
+[epoch=5][batch=282/382]:
+	 Train time/batch: 1809
+	 Train time/sample: 28896
+	 Train time/batch_in_epoch: 281
+	 Train time/sample_in_epoch: 4496
+	 Train time/token: 7397376
+	 Train time/token_in_epoch: 1150976
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0090
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0679
+	 Train throughput/samples_per_sec: 81.0859
+	 Train throughput/device/batches_per_sec: 1.2670
+	 Train throughput/device/samples_per_sec: 20.2715
+	 Train throughput/tokens_per_sec: 20757.9952
+	 Train throughput/device/tokens_per_sec: 5189.4988
+	 Train time/train: 0.1005
+	 Train time/val: 0.0009
+	 Train time/total: 0.1014
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=5][batch=292/382]:
+	 Train time/batch: 1819
+	 Train time/sample: 29056
+	 Train time/batch_in_epoch: 291
+	 Train time/sample_in_epoch: 4656
+	 Train time/token: 7438336
+	 Train time/token_in_epoch: 1191936
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0092
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0686
+	 Train throughput/samples_per_sec: 81.0982
+	 Train throughput/device/batches_per_sec: 1.2672
+	 Train throughput/device/samples_per_sec: 20.2745
+	 Train throughput/tokens_per_sec: 20761.1285
+	 Train throughput/device/tokens_per_sec: 5190.2821
+	 Train time/train: 0.1011
+	 Train time/val: 0.0009
+	 Train time/total: 0.1019
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=5][batch=302/382]:
+	 Train time/batch: 1829
+	 Train time/sample: 29216
+	 Train time/batch_in_epoch: 301
+	 Train time/sample_in_epoch: 4816
+	 Train time/token: 7479296
+	 Train time/token_in_epoch: 1232896
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0019
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0713
+	 Train throughput/samples_per_sec: 81.1405
+	 Train throughput/device/batches_per_sec: 1.2678
+	 Train throughput/device/samples_per_sec: 20.2851
+	 Train throughput/tokens_per_sec: 20771.9687
+	 Train throughput/device/tokens_per_sec: 5192.9922
+	 Train time/train: 0.1016
+	 Train time/val: 0.0009
+	 Train time/total: 0.1025
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=5][batch=312/382]:
+	 Train time/batch: 1839
+	 Train time/sample: 29376
+	 Train time/batch_in_epoch: 311
+	 Train time/sample_in_epoch: 4976
+	 Train time/token: 7520256
+	 Train time/token_in_epoch: 1273856
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0156
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0697
+	 Train throughput/samples_per_sec: 81.1155
+	 Train throughput/device/batches_per_sec: 1.2674
+	 Train throughput/device/samples_per_sec: 20.2789
+	 Train throughput/tokens_per_sec: 20765.5576
+	 Train throughput/device/tokens_per_sec: 5191.3894
+	 Train time/train: 0.1022
+	 Train time/val: 0.0009
+	 Train time/total: 0.1030
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=5][batch=322/382]:
+	 Train time/batch: 1849
+	 Train time/sample: 29536
+	 Train time/batch_in_epoch: 321
+	 Train time/sample_in_epoch: 5136
+	 Train time/token: 7561216
+	 Train time/token_in_epoch: 1314816
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0029
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0714
+	 Train throughput/samples_per_sec: 81.1419
+	 Train throughput/device/batches_per_sec: 1.2678
+	 Train throughput/device/samples_per_sec: 20.2855
+	 Train throughput/tokens_per_sec: 20772.3248
+	 Train throughput/device/tokens_per_sec: 5193.0812
+	 Train time/train: 0.1027
+	 Train time/val: 0.0009
+	 Train time/total: 0.1036
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=5][batch=332/382]:
+	 Train time/batch: 1859
+	 Train time/sample: 29696
+	 Train time/batch_in_epoch: 331
+	 Train time/sample_in_epoch: 5296
+	 Train time/token: 7602176
+	 Train time/token_in_epoch: 1355776
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0062
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0713
+	 Train throughput/samples_per_sec: 81.1410
+	 Train throughput/device/batches_per_sec: 1.2678
+	 Train throughput/device/samples_per_sec: 20.2852
+	 Train throughput/tokens_per_sec: 20772.0888
+	 Train throughput/device/tokens_per_sec: 5193.0222
+	 Train time/train: 0.1033
+	 Train time/val: 0.0009
+	 Train time/total: 0.1041
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=5][batch=342/382]:
+	 Train time/batch: 1869
+	 Train time/sample: 29856
+	 Train time/batch_in_epoch: 341
+	 Train time/sample_in_epoch: 5456
+	 Train time/token: 7643136
+	 Train time/token_in_epoch: 1396736
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0064
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0683
+	 Train throughput/samples_per_sec: 81.0921
+	 Train throughput/device/batches_per_sec: 1.2671
+	 Train throughput/device/samples_per_sec: 20.2730
+	 Train throughput/tokens_per_sec: 20759.5649
+	 Train throughput/device/tokens_per_sec: 5189.8912
+	 Train time/train: 0.1038
+	 Train time/val: 0.0009
+	 Train time/total: 0.1047
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=5][batch=352/382]:
+	 Train time/batch: 1879
+	 Train time/sample: 30016
+	 Train time/batch_in_epoch: 351
+	 Train time/sample_in_epoch: 5616
+	 Train time/token: 7684096
+	 Train time/token_in_epoch: 1437696
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0088
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0641
+	 Train throughput/samples_per_sec: 81.0257
+	 Train throughput/device/batches_per_sec: 1.2660
+	 Train throughput/device/samples_per_sec: 20.2564
+	 Train throughput/tokens_per_sec: 20742.5740
+	 Train throughput/device/tokens_per_sec: 5185.6435
+	 Train time/train: 0.1044
+	 Train time/val: 0.0009
+	 Train time/total: 0.1052
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=5][batch=362/382]:
+	 Train time/batch: 1889
+	 Train time/sample: 30176
+	 Train time/batch_in_epoch: 361
+	 Train time/sample_in_epoch: 5776
+	 Train time/token: 7725056
+	 Train time/token_in_epoch: 1478656
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0036
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0632
+	 Train throughput/samples_per_sec: 81.0116
+	 Train throughput/device/batches_per_sec: 1.2658
+	 Train throughput/device/samples_per_sec: 20.2529
+	 Train throughput/tokens_per_sec: 20738.9696
+	 Train throughput/device/tokens_per_sec: 5184.7424
+	 Train time/train: 0.1049
+	 Train time/val: 0.0009
+	 Train time/total: 0.1058
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=5][batch=372/382]:
+	 Train time/batch: 1899
+	 Train time/sample: 30336
+	 Train time/batch_in_epoch: 371
+	 Train time/sample_in_epoch: 5936
+	 Train time/token: 7766016
+	 Train time/token_in_epoch: 1519616
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0075
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0686
+	 Train throughput/samples_per_sec: 81.0968
+	 Train throughput/device/batches_per_sec: 1.2671
+	 Train throughput/device/samples_per_sec: 20.2742
+	 Train throughput/tokens_per_sec: 20760.7897
+	 Train throughput/device/tokens_per_sec: 5190.1974
+	 Train time/train: 0.1055
+	 Train time/val: 0.0009
+	 Train time/total: 0.1063
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[epoch=5][batch=382/382]:
+	 Train time/batch: 1909
+	 Train time/sample: 30496
+	 Train time/batch_in_epoch: 381
+	 Train time/sample_in_epoch: 6096
+	 Train time/token: 7806976
+	 Train time/token_in_epoch: 1560576
+	 Train trainer/device_train_microbatch_size: 4
+	 Train loss/train/total: 0.0010
+	 Train metrics/train/MulticlassAccuracy: 1.0000
+	 Train metrics/train/MulticlassMatthewsCorrCoef: 1
+	 Train metrics/train/BinaryF1Score: 1.0000
+	 Train throughput/batches_per_sec: 5.0833
+	 Train throughput/samples_per_sec: 80.1134
+	 Train throughput/device/batches_per_sec: 1.2708
+	 Train throughput/device/samples_per_sec: 20.0283
+	 Train throughput/tokens_per_sec: 20509.0187
+	 Train throughput/device/tokens_per_sec: 5127.2547
+	 Train time/train: 0.1060
+	 Train time/val: 0.0009
+	 Train time/total: 0.1069
+	 Train lr-DecoupledAdamW/group0: 0.0000
+[Eval batch=1/20] Eval on eval data
+[Eval batch=3/20] Eval on eval data
+[Eval batch=5/20] Eval on eval data
+[Eval batch=7/20] Eval on eval data
+[Eval batch=9/20] Eval on eval data
+[Eval batch=10/20] Eval on eval data
+[Eval batch=12/20] Eval on eval data
+[Eval batch=14/20] Eval on eval data
+[Eval batch=16/20] Eval on eval data
+[Eval batch=18/20] Eval on eval data
+[Eval batch=20/20] Eval on eval data:
+	 Eval metrics/eval/MulticlassAccuracy: 0.9969
+	 Eval metrics/eval/MulticlassMatthewsCorrCoef: 0.9936
+	 Eval metrics/eval/BinaryF1Score: 0.9962
+wandb: - 0.006 MB of 0.006 MB uploadedwandb: \ 0.006 MB of 0.006 MB uploadedwandb: | 0.006 MB of 0.006 MB uploadedwandb: / 0.021 MB of 0.187 MB uploadedwandb: - 0.025 MB of 0.189 MB uploadedwandb: \ 0.025 MB of 0.189 MB uploadedwandb: | 0.189 MB of 0.189 MB uploadedwandb:                                                                                
+wandb: 
+wandb: Run history:
+wandb:                         loss/train/total ██▄▅▇▄▄▄▂▃▂▄▂▃▁▂▄▂▃▁▁▃▁▁▁▁▃▁▂▁▁▁▁▂▂▁▁▁▁▁
+wandb:                 lr-DecoupledAdamW/group0 ▂▅████▇▇▇▇▇▆▆▆▆▆▅▅▅▅▅▅▄▄▄▄▄▃▃▃▃▃▂▂▂▂▂▁▁▁
+wandb:               metrics/eval/BinaryF1Score ▁▃▅▇▇█████
+wandb:          metrics/eval/MulticlassAccuracy ▁▄▅▇▇█████
+wandb:  metrics/eval/MulticlassMatthewsCorrCoef ▁▃▅▇▇█████
+wandb:              metrics/train/BinaryF1Score ▁▁▆▆▃▆▄▇█▇▇▆█▇██▆▇▇██▇████▇█▇████▇▇█████
+wandb:         metrics/train/MulticlassAccuracy ▁▁▆▆▂▆▇▇█▆▇▅█▇██▇▇▇██▆████▇█▇████▇▇█████
+wandb: metrics/train/MulticlassMatthewsCorrCoef ▁▁▆▆▂▆▅▇█▆▇▅█▇██▇▇▇██▆████▇█▇████▇▇█████
+wandb:               throughput/batches_per_sec ██████████▇█▇▆███████▁██████████████████
+wandb:        throughput/device/batches_per_sec ██████████▇█▇▆███████▁██████████████████
+wandb:        throughput/device/samples_per_sec ███████▇██▇█▇▆█▇█████▁██▇███████▇███████
+wandb:         throughput/device/tokens_per_sec ███████▇██▇█▇▆█▇█████▁██▇███████▇███████
+wandb:               throughput/samples_per_sec ███████▇██▇█▇▆█▇█████▁██▇███████▇███████
+wandb:                throughput/tokens_per_sec ███████▇██▇█▇▆█▇█████▁██▇███████▇███████
+wandb:                               time/batch ▁▁▁▂▂▂▂▂▂▃▃▃▃▃▃▄▄▄▄▄▅▅▅▅▅▅▆▆▆▆▆▇▇▇▇▇▇███
+wandb:                      time/batch_in_epoch ▁▂▃▄▅▆▇█▁▂▃▄▅▆▇█▁▂▃▄▅▆▇█▁▂▃▄▅▆▇█▁▂▃▄▅▆▇█
+wandb:                               time/epoch ▁▂▄▅▇█
+wandb:                              time/sample ▁▁▁▂▂▂▂▂▂▃▃▃▃▃▃▄▄▄▄▄▅▅▅▅▅▅▆▆▆▆▆▇▇▇▇▇▇███
+wandb:                     time/sample_in_epoch ▁▂▃▄▅▆▇█▁▂▃▄▅▆▇█▁▂▃▄▅▆▇█▁▂▃▄▅▆▇█▁▂▃▄▅▆▇█
+wandb:                               time/token ▁▁▁▂▂▂▂▂▂▃▃▃▃▃▃▄▄▄▄▄▅▅▅▅▅▅▆▆▆▆▆▇▇▇▇▇▇███
+wandb:                      time/token_in_epoch ▁▂▃▄▅▆▇█▁▂▃▄▅▆▇█▁▂▃▄▅▆▇█▁▂▃▄▅▆▇█▁▂▃▄▅▆▇█
+wandb:                               time/total ▁▁▁▂▂▂▂▂▂▃▃▃▃▃▃▄▄▄▄▄▅▅▅▅▅▅▆▆▆▆▆▇▇▇▇▇▇███
+wandb:                               time/train ▁▁▁▂▂▂▂▂▂▃▃▃▃▃▃▄▄▄▄▄▅▅▅▅▅▅▆▆▆▆▆▇▇▇▇▇▇███
+wandb:                                 time/val ▁▁▁▁▂▂▂▂▂▃▃▃▃▃▃▃▃▄▄▄▄▅▅▅▅▆▆▆▆▆▆▆▆▆▇▇▇▇██
+wandb:     trainer/device_train_microbatch_size ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb: 
+wandb: Run summary:
+wandb:                         loss/train/total 0.00102
+wandb:                 lr-DecoupledAdamW/group0 0.0
+wandb:               metrics/eval/BinaryF1Score 0.9962
+wandb:          metrics/eval/MulticlassAccuracy 0.99687
+wandb:  metrics/eval/MulticlassMatthewsCorrCoef 0.99357
+wandb:              metrics/train/BinaryF1Score 1.0
+wandb:         metrics/train/MulticlassAccuracy 1.0
+wandb: metrics/train/MulticlassMatthewsCorrCoef 1
+wandb:               throughput/batches_per_sec 5.08333
+wandb:        throughput/device/batches_per_sec 1.27083
+wandb:        throughput/device/samples_per_sec 20.02834
+wandb:         throughput/device/tokens_per_sec 5127.25467
+wandb:               throughput/samples_per_sec 80.11335
+wandb:                throughput/tokens_per_sec 20509.0187
+wandb:                               time/batch 1910
+wandb:                      time/batch_in_epoch 0
+wandb:                               time/epoch 5
+wandb:                              time/sample 30500
+wandb:                     time/sample_in_epoch 0
+wandb:                               time/token 7806976
+wandb:                      time/token_in_epoch 1560576
+wandb:                               time/total 0.10685
+wandb:                               time/train 0.10599
+wandb:                                 time/val 0.00086
+wandb:     trainer/device_train_microbatch_size 4
+wandb: 
+wandb: 🚀 View run finetune-mosaic-bert at: https://wandb.ai/naimavahaboo-RMIT%20University/mosaicbertfinetune_lncfull/runs/yiifc2nm
+wandb: ⭐️ View project at: https://wandb.ai/naimavahaboo-RMIT%20University/mosaicbertfinetune_lncfull
+wandb: Synced 5 W&B file(s), 0 media file(s), 2 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20240730_004308-yiifc2nm/logs
+Waiting up to 30 seconds for all training processes to terminate. Press Ctrl-C to exit immediately.
