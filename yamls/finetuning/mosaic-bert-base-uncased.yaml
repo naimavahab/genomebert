@@ -1,0 +1,83 @@
+# This YAML is built to work with the `sequence_classification.py` starter script!
+#
+#   Follow the instructions in that script to modify the `build_my_dataloader` function
+#   and fine-tune a BERT model on your own dataset!
+#
+#
+#   Note that some of the fields in this template haven't been filled in yet.
+#   Please resolve any empty fields before launching!
+
+# Run Name
+run_name: finetune-mosaic-bert
+
+tokenizer_name: dnavocab.json
+model_name:  ./genome_bert_base  #bert-base-uncased  #/ckpt/ep3-ba1458-rank0.pt
+pretrained_checkpoint: mosaic-bert-base-uncasedepoch20/ckpt/latest-rank0.pt #ep3-ba1458-rank0.pt
+max_seq_len: 1500 #256 #370 #256 #512 # 256
+
+load_path: mosaic-bert-base-uncasedepoch20/ckpt/latest-rank0.pt  # (Optionally) provide a composer checkpoint to use for the starting weights
+save_folder: outputs_finetune/rna9_sept
+# Model
+model:
+  name: mosaic_bert
+  num_labels: 2 # <-- Make sure to update these after you modify the starter script!
+  pretrained_model_name: ${model_name}
+  tokenizer_name: ${tokenizer_name}
+
+# Dataloaders (make sure to update these after you modify the starter script!)
+train_loader:
+  split: train
+  tokenizer_name: ${tokenizer_name}
+  max_seq_len: ${max_seq_len}
+  shuffle: true
+  drop_last: true
+  num_workers: 8
+
+eval_loader:
+  split: validation
+  tokenizer_name: ${tokenizer_name}
+  max_seq_len: ${max_seq_len}
+  shuffle: true
+  drop_last: true
+  num_workers: 8
+
+# Optimization
+scheduler:
+  name: linear_decay_with_warmup
+  t_warmup: 0.06dur # Warmup to the full LR for 6% of the training duration
+  alpha_f: 0.02 # Linearly decay to 0.02x the full LR by the end of the training duration
+
+optimizer:
+  name: decoupled_adamw
+  lr: 1.0e-5
+  betas:
+  - 0.9
+  - 0.98
+  eps: 1.0e-06
+  weight_decay: 1.0e-6
+
+# Training duration and evaluation frequency
+max_duration: 5ep
+eval_interval: 1ep #50ba #1ep
+global_train_batch_size: 16
+
+# System
+seed: 17
+device_eval_batch_size: 16
+device_train_microbatch_size: 16
+precision: amp_bf16
+
+# Logging
+progress_bar: false
+log_to_console: true
+console_log_interval: 2ba
+
+# Optionally log to W&B
+loggers:
+   wandb: 
+    project: mosaicbert_finetunev1
+
+callbacks:
+  speed_monitor:
+    window_size: 50
+  lr_monitor: {}
